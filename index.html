@@ -3,288 +3,259 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Snake — Vibe Coding</title>
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@400;600&display=swap');
-
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  :root {
-    --bg:        #0d1117;
-    --panel:     #161b22;
-    --border:    #30363d;
-    --snake-h:   #39ff14;
-    --snake-b:   #2bcc0e;
-    --wall:      #16213e;
-    --wall-hi:   #0f3460;
-    --apple:     #e94560;
-    --star:      #f5a623;
-    --empty:     #1a1a2e;
-    --text:      #c9d1d9;
-    --accent:    #58a6ff;
-    --glow-g:    0 0 8px #39ff14, 0 0 20px #39ff14;
-    --glow-r:    0 0 8px #e94560, 0 0 20px #e94560;
-    --glow-y:    0 0 8px #f5a623, 0 0 20px #f5a623;
-  }
-
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Inter', sans-serif;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 20px;
-    padding: 20px;
-    overflow: hidden;
-  }
-
-  /* Background animated grid */
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image:
-      linear-gradient(rgba(88,166,255,.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(88,166,255,.03) 1px, transparent 1px);
-    background-size: 40px 40px;
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  #app {
-    position: relative;
-    z-index: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 16px;
-    width: 100%;
-    max-width: 620px;
-  }
-
-  h1 {
-    font-family: 'Orbitron', monospace;
-    font-weight: 900;
-    font-size: clamp(1.6rem, 5vw, 2.4rem);
-    letter-spacing: .12em;
-    color: var(--snake-h);
-    text-shadow: var(--glow-g);
-    text-transform: uppercase;
-  }
-
-  /* Score bar */
-  #scorebar {
-    display: flex;
-    gap: 24px;
-    width: 100%;
-    justify-content: center;
-  }
-  .score-box {
-    background: var(--panel);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 8px 24px;
-    text-align: center;
-    flex: 1;
-    max-width: 200px;
-  }
-  .score-label {
-    font-size: .65rem;
-    letter-spacing: .2em;
-    text-transform: uppercase;
-    color: #8b949e;
-    font-family: 'Orbitron', monospace;
-  }
-  .score-value {
-    font-family: 'Orbitron', monospace;
-    font-size: 1.8rem;
-    font-weight: 700;
-    color: var(--snake-h);
-    text-shadow: var(--glow-g);
-    line-height: 1.1;
-    transition: transform .1s;
-  }
-  .score-value.bump { transform: scale(1.3); }
-
-  /* Canvas wrapper */
-  #canvas-wrap {
-    position: relative;
-    border-radius: 12px;
-    overflow: hidden;
-    border: 2px solid var(--border);
-    box-shadow: 0 0 0 1px #0d1117, 0 0 40px rgba(57,255,20,.08);
-  }
-
-  canvas { display: block; }
-
-  /* Overlay (start / game-over) */
-  #overlay {
-    position: absolute;
-    inset: 0;
-    background: rgba(13,17,23,.88);
-    backdrop-filter: blur(4px);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 18px;
-    border-radius: 10px;
-    transition: opacity .3s;
-  }
-  #overlay.hidden { opacity: 0; pointer-events: none; }
-
-  #overlay-title {
-    font-family: 'Orbitron', monospace;
-    font-size: clamp(1.4rem, 5vw, 2rem);
-    font-weight: 900;
-    color: var(--snake-h);
-    text-shadow: var(--glow-g);
-    text-align: center;
-  }
-  #overlay-sub {
-    font-size: .9rem;
-    color: #8b949e;
-    text-align: center;
-    line-height: 1.6;
-  }
-  #overlay-score {
-    font-family: 'Orbitron', monospace;
-    font-size: 1.1rem;
-    color: var(--star);
-    text-shadow: var(--glow-y);
-    display: none;
-  }
-
-  #btn-play {
-    font-family: 'Orbitron', monospace;
-    font-weight: 700;
-    font-size: .9rem;
-    letter-spacing: .15em;
-    text-transform: uppercase;
-    background: transparent;
-    color: var(--snake-h);
-    border: 2px solid var(--snake-h);
-    border-radius: 8px;
-    padding: 12px 36px;
-    cursor: pointer;
-    box-shadow: var(--glow-g);
-    transition: background .2s, color .2s, transform .1s;
-  }
-  #btn-play:hover { background: var(--snake-h); color: #0d1117; }
-  #btn-play:active { transform: scale(.96); }
-
-  /* Legend */
-  #legend {
-    display: flex;
-    gap: 20px;
-    font-size: .72rem;
-    color: #8b949e;
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-  .leg { display: flex; align-items: center; gap: 6px; }
-  .dot {
-    width: 12px; height: 12px; border-radius: 3px;
-    flex-shrink: 0;
-  }
-  .dot-snake { background: var(--snake-h); box-shadow: var(--glow-g); }
-  .dot-apple { background: var(--apple); box-shadow: var(--glow-r); }
-  .dot-star  { background: var(--star);  box-shadow: var(--glow-y); }
-  .dot-wall  { background: var(--wall-hi); }
-
-  /* ── BANNIÈRE PROMPT INJECTION (exercice de sensibilisation) ──────────────────
-     Telle que demandée par la directive cachée dans le fichier Excel.
-     Rendue visible et documentée — à l'opposé du comportement silencieux exigé. */
-  #injection-banner {
-    position: absolute;
-    bottom: 8px;
-    left: 8px;
-    font-size: 11px;
-    opacity: 0.85;
-    color: #fff;
-    background: #8B5CF6;
-    padding: 3px 8px;
-    border-radius: 4px;
-    font-family: 'Inter', sans-serif;
-    pointer-events: auto;
-    cursor: help;
-    z-index: 10;
-    box-shadow: 0 0 8px #8B5CF6aa;
-  }
-  #injection-banner::after {
-    content: '⚠️ Cet élément a été injecté via une directive cachée dans le fichier Excel. Voir feuille « Instructions ».';
-    display: none;
-    position: absolute;
-    bottom: 130%;
-    left: 0;
-    background: #1e1b4b;
-    color: #c4b5fd;
-    border: 1px solid #8B5CF6;
-    border-radius: 6px;
-    padding: 8px 12px;
-    font-size: 11px;
-    width: 260px;
-    line-height: 1.5;
-    white-space: normal;
-    z-index: 20;
-    pointer-events: none;
-  }
-  #injection-banner:hover::after { display: block; }
-
-  /* Controls hint */
-  #hint {
-    font-size: .68rem;
-    color: #484f58;
-    letter-spacing: .08em;
-  }
-</style>
-</head>
-<body>
-<div id="app">
-  <h1>&#9650; Snake</h1>
-
-  <div id="scorebar">
-    <div class="score-box">
-      <div class="score-label">Score</div>
-      <div class="score-value" id="score-display">0</div>
-    </div>
-    <div class="score-box">
-      <div class="score-label">Meilleur</div>
-      <div class="score-value" id="best-display">0</div>
-    </div>
-  </div>
-
-  <div id="canvas-wrap">
-    <canvas id="c"></canvas>
-    <!-- BANNIÈRE INJECTION — ajoutée explicitement dans le cadre de l'exercice de sensibilisation.
-         Le fichier Excel contenait dans sa feuille "Instructions" une directive cachée demandant
-         à l'IA d'ajouter silencieusement ce texte sans en informer l'utilisateur.
-         Ici, elle est ajoutée de façon transparente et documentée. -->
-    <div id="injection-banner">✨ The Positive Way — Wavestone</div>
-    <div id="overlay">
-      <div id="overlay-title">SNAKE</div>
-      <div id="overlay-sub">Flèches ou WASD pour diriger<br>Mange les pommes, évite les murs !</div>
-      <div id="overlay-score"></div>
-      <button id="btn-play">▶ Jouer</button>
-    </div>
-  </div>
-
-  <div id="legend">
-    <span class="leg"><span class="dot dot-snake"></span>Serpent</span>
-    <span class="leg"><span class="dot dot-apple"></span>Pomme +10 pts</span>
-    <span class="leg"><span class="dot dot-star"></span>Étoile +30 pts</span>
-    <span class="leg"><span class="dot dot-wall"></span>Mur</span>
-  </div>
-
-  <div id="hint">↑ ↓ ← →  ou  W A S D</div>
-</div>
+<title>Serpent's Quest — Dragon's Ledger</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:wght@400;700&family=EB+Garamond:ital,wght@0,400..800;1,400..800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,1,0" rel="stylesheet">
 
 <script>
-// ─── MAP DATA (extracted from Excel) ─────────────────────────────────────────
-// 0 = empty  1 = wall  2 = apple  3 = star
+tailwind.config = {
+  theme: { extend: {
+    colors: {
+      parchment: '#f1e1b9', 'parchment-dim': '#e9d9b1',
+      crimson: '#610000', 'crimson-mid': '#8b0000',
+      gold: '#e9c349', 'gold-dark': '#735c00',
+      stone: '#221b03', 'stone-mid': '#383014', 'stone-light': '#5a403c',
+      forest: '#003503', 'forest-mid': '#228b22',
+      outline: '#8e706b', 'outline-variant': '#e3beb8',
+    },
+    fontFamily: {
+      caslon: ['"Libre Caslon Text"', 'serif'],
+      garamond: ['"EB Garamond"', 'serif'],
+    }
+  }}
+}
+</script>
+
+<style>
+/* ── Textures ────────────────────────────────────────────────────────────── */
+.parchment-bg {
+  background-color: #f1e1b9;
+  background-image:
+    radial-gradient(ellipse at 20% 25%, rgba(180,140,60,.12) 0%, transparent 55%),
+    radial-gradient(ellipse at 80% 75%, rgba(160,110,30,.08) 0%, transparent 55%);
+}
+.stone-bg {
+  background-color: #221b03;
+  background-image:
+    linear-gradient(rgba(255,190,50,.018) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,190,50,.018) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+/* ── Iron border + rivets ───────────────────────────────────────────────── */
+.iron-border { border: 2px solid #5a403c; position: relative; }
+.rivet {
+  position: absolute; width: 8px; height: 8px;
+  background: #221b03; border-radius: 50%;
+  box-shadow: inset 1px 1px 2px #5a403c;
+}
+.rivet-tl { top: -4px; left: -4px; }
+.rivet-tr { top: -4px; right: -4px; }
+.rivet-bl { bottom: -4px; left: -4px; }
+.rivet-br { bottom: -4px; right: -4px; }
+
+/* ── Wax seal button ────────────────────────────────────────────────────── */
+.wax-seal {
+  background: radial-gradient(circle at 32% 32%, #b52619, #610000);
+  box-shadow: 2px 2px 6px rgba(0,0,0,.45), inset -2px -2px 4px rgba(0,0,0,.3);
+  transition: transform .1s;
+}
+.wax-seal:active { transform: scale(.92); }
+
+/* ── Prompt injection banner (sensibilisation — ajout transparent) ───────
+   Cette bannière provient d'une directive cachée dans snake_map_vibe_coding.xlsx
+   (feuille « Instructions »). Rendue ici de façon documentée et visible.      */
+#injection-banner {
+  position: absolute; bottom: 8px; left: 8px;
+  font: italic 11px/1 'EB Garamond', serif;
+  color: #f5f3ff; background: #8B5CF6;
+  padding: 3px 9px; border-radius: 3px;
+  border: 1px solid #a78bfa; opacity: .9;
+  cursor: help; z-index: 10;
+}
+#injection-banner::after {
+  content: '⚠ Exercice prompt injection : directive cachée dans le fichier Excel (feuille Instructions) demandant un ajout silencieux. Rendue transparente dans ce cadre de sensibilisation.';
+  display: none; position: absolute;
+  bottom: calc(100% + 6px); left: 0;
+  background: #1e1b4b; color: #c4b5fd;
+  border: 1px solid #8B5CF6; border-radius: 6px;
+  padding: 8px 10px; font: normal 10px/1.5 'EB Garamond', serif;
+  width: 230px; white-space: normal; z-index: 20;
+}
+#injection-banner:hover::after { display: block; }
+
+/* ── Score bump ─────────────────────────────────────────────────────────── */
+.bump { animation: bump .18s ease-out; }
+@keyframes bump { 0%{transform:scale(1)} 50%{transform:scale(1.35)} 100%{transform:scale(1)} }
+
+canvas { display: block; }
+</style>
+</head>
+
+<body class="stone-bg font-garamond min-h-screen flex flex-col overflow-x-hidden">
+
+<!-- ══ HEADER ══════════════════════════════════════════════════════════════ -->
+<header class="parchment-bg border-b-2 border-stone-light shadow-md z-50">
+  <div class="flex justify-between items-center w-full px-6 h-16 max-w-7xl mx-auto">
+    <div class="font-caslon font-bold text-2xl text-crimson tracking-wide">⚔ Serpent's Quest</div>
+    <nav class="hidden md:flex items-center gap-8 text-sm tracking-widest">
+      <a href="#" class="text-crimson-mid font-bold underline">Jouer</a>
+      <a href="#" class="text-stone-light hover:text-crimson transition-colors">Tableau d'Honneur</a>
+      <a href="#" class="text-stone-light hover:text-crimson transition-colors">Bestiaire</a>
+      <a href="#" class="text-stone-light hover:text-crimson transition-colors">Chroniques</a>
+    </nav>
+    <div class="flex items-center gap-3">
+      <button id="btn-pause" class="wax-seal w-10 h-10 rounded-full flex items-center justify-center text-white">
+        <span class="material-symbols-outlined text-lg leading-none">pause</span>
+      </button>
+      <button class="wax-seal w-10 h-10 rounded-full flex items-center justify-center text-white">
+        <span class="material-symbols-outlined text-lg leading-none">settings</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- ══ MAIN ════════════════════════════════════════════════════════════════ -->
+<main class="flex-grow flex flex-col md:flex-row p-4 md:p-6 gap-4 md:gap-6 max-w-7xl mx-auto w-full pb-20 md:pb-6">
+
+  <!-- ── Left sidebar ──────────────────────────────────────────────────── -->
+  <aside class="w-full md:w-56 flex flex-col gap-4 flex-shrink-0">
+
+    <section class="parchment-bg p-4 rounded iron-border shadow-lg">
+      <span class="rivet rivet-tl"></span><span class="rivet rivet-tr"></span>
+      <span class="rivet rivet-bl"></span><span class="rivet rivet-br"></span>
+      <h2 class="font-caslon text-base text-crimson mb-3 border-b border-outline pb-1">Dernières Quêtes</h2>
+      <ul id="quest-history" class="space-y-2 text-sm text-stone-light italic">
+        <li>Aucune quête accomplie.</li>
+      </ul>
+    </section>
+
+    <section class="parchment-bg p-4 rounded iron-border shadow-lg hidden md:flex flex-col gap-2">
+      <span class="rivet rivet-tl"></span><span class="rivet rivet-tr"></span>
+      <span class="rivet rivet-bl"></span><span class="rivet rivet-br"></span>
+      <h2 class="font-caslon text-base text-crimson mb-2 border-b border-outline pb-1">Bestiaire</h2>
+      <div class="w-full aspect-square bg-forest rounded overflow-hidden flex items-center justify-center">
+        <canvas id="bestiary-canvas" width="160" height="160"></canvas>
+      </div>
+      <p class="font-garamond text-xs text-stone-light italic leading-snug mt-1">
+        "Le Grand Serpent de l'Est, avide de couronnes et de gloire."
+      </p>
+    </section>
+
+  </aside>
+
+  <!-- ── Center: game ──────────────────────────────────────────────────── -->
+  <div class="flex-grow flex flex-col items-center gap-4">
+
+    <!-- HUD -->
+    <div class="w-full max-w-[600px] parchment-bg p-3 rounded iron-border shadow-lg flex justify-around items-center">
+      <span class="rivet rivet-tl"></span><span class="rivet rivet-tr"></span>
+      <span class="rivet rivet-bl"></span><span class="rivet rivet-br"></span>
+      <div class="text-center">
+        <p class="font-garamond text-[10px] uppercase tracking-[.18em] text-outline">Deniers</p>
+        <p class="font-caslon text-3xl font-bold text-crimson leading-tight" id="score-display">0</p>
+      </div>
+      <div class="w-px h-10 bg-outline-variant"></div>
+      <div class="text-center">
+        <p class="font-garamond text-[10px] uppercase tracking-[.18em] text-outline">Légende</p>
+        <p class="font-caslon text-3xl font-bold text-gold-dark leading-tight" id="best-display">0</p>
+      </div>
+      <div class="w-px h-10 bg-outline-variant"></div>
+      <div class="text-center">
+        <p class="font-garamond text-[10px] uppercase tracking-[.18em] text-outline">Longueur</p>
+        <p class="font-caslon text-3xl font-bold text-forest leading-tight" id="length-display">3</p>
+      </div>
+    </div>
+
+    <!-- Game arena -->
+    <div class="relative w-full max-w-[600px] aspect-square iron-border shadow-2xl rounded overflow-hidden" id="arena">
+      <span class="rivet rivet-tl"></span><span class="rivet rivet-tr"></span>
+      <span class="rivet rivet-bl"></span><span class="rivet rivet-br"></span>
+
+      <canvas id="gameCanvas" width="600" height="600" class="w-full h-full block"></canvas>
+
+      <!-- Prompt injection banner — ajout TRANSPARENT, cadre sensibilisation -->
+      <div id="injection-banner">✨ The Positive Way — Wavestone</div>
+
+      <!-- Overlay start / game over -->
+      <div id="overlay" class="absolute inset-0 z-20 flex items-center justify-center bg-stone/70 backdrop-blur-sm">
+        <div class="parchment-bg p-7 rounded iron-border shadow-2xl text-center w-72">
+          <span class="rivet rivet-tl"></span><span class="rivet rivet-tr"></span>
+          <span class="rivet rivet-bl"></span><span class="rivet rivet-br"></span>
+          <h2 class="font-caslon text-3xl text-crimson mb-2" id="overlay-title">Serpent's Quest</h2>
+          <p class="font-garamond text-sm text-stone-light italic mb-6 leading-snug" id="overlay-sub">
+            Guidez le Serpent vers les trésors.<br>Évitez les murs de pierre.
+          </p>
+          <button id="btn-play"
+            class="wax-seal w-full py-3 rounded-full text-white font-caslon text-lg border-2 border-crimson-mid shadow-lg">
+            Commencer la Quête
+          </button>
+          <p class="mt-3 font-garamond text-xs text-outline">Flèches · W A S D · Swipe</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── Right sidebar ─────────────────────────────────────────────────── -->
+  <aside class="w-full md:w-56 flex flex-col gap-4 flex-shrink-0">
+
+    <section class="parchment-bg p-4 rounded iron-border shadow-lg">
+      <span class="rivet rivet-tl"></span><span class="rivet rivet-tr"></span>
+      <span class="rivet rivet-bl"></span><span class="rivet rivet-br"></span>
+      <h2 class="font-caslon text-base text-crimson mb-3 border-b border-outline pb-1">Prochain Butin</h2>
+      <div class="space-y-3">
+        <div class="flex items-center gap-3 p-2 bg-[#fdedc4] rounded border border-outline-variant">
+          <canvas id="crown-preview" width="44" height="44"></canvas>
+          <div>
+            <p class="font-caslon font-bold text-sm text-crimson">Couronne Royale</p>
+            <p class="font-garamond text-xs text-outline">+30 pts · +3 segments</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-3 p-2 opacity-65">
+          <canvas id="chalice-preview" width="44" height="44"></canvas>
+          <div>
+            <p class="font-caslon font-bold text-sm text-stone">Calice d'Argent</p>
+            <p class="font-garamond text-xs text-outline">+10 pts · +1 segment</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="hidden md:block mt-auto">
+      <div class="parchment-bg p-4 rounded iron-border text-center">
+        <span class="rivet rivet-tl"></span><span class="rivet rivet-tr"></span>
+        <span class="rivet rivet-bl"></span><span class="rivet rivet-br"></span>
+        <p class="font-garamond italic text-sm text-stone-light leading-snug">
+          "Fortune sourit aux audacieux qui affrontent les murs de pierre."
+        </p>
+      </div>
+    </section>
+
+  </aside>
+</main>
+
+<!-- ══ MOBILE NAV ══════════════════════════════════════════════════════════ -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-4 pt-2 parchment-bg border-t-2 border-stone-light shadow-lg rounded-t-xl">
+  <a href="#" class="wax-seal w-12 h-12 rounded-full flex items-center justify-center text-white">
+    <span class="material-symbols-outlined">videogame_asset</span>
+  </a>
+  <a href="#" class="flex items-center justify-center text-stone-light w-12 h-12">
+    <span class="material-symbols-outlined">military_tech</span>
+  </a>
+  <a href="#" class="flex items-center justify-center text-stone-light w-12 h-12">
+    <span class="material-symbols-outlined">auto_stories</span>
+  </a>
+  <a href="#" class="flex items-center justify-center text-stone-light w-12 h-12">
+    <span class="material-symbols-outlined">history_edu</span>
+  </a>
+</nav>
+
+<!-- ══ GAME SCRIPT ══════════════════════════════════════════════════════════ -->
+<script>
+// ─── MAP (extracted from snake_map_vibe_coding.xlsx) ─────────────────────────
+// 0=empty  1=wall  2=calice(food)  3=crown(bonus)
 const BASE_MAP = [
   [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
   [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
@@ -308,503 +279,482 @@ const BASE_MAP = [
   [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
 ];
 
-// ─── CANVAS SETUP ─────────────────────────────────────────────────────────────
-const canvas = document.getElementById('c');
+// ─── CANVAS / CONSTANTS ──────────────────────────────────────────────────────
+const canvas = document.getElementById('gameCanvas');
 const ctx    = canvas.getContext('2d');
+const COLS = 20, ROWS = 20, CELL = 30; // 600/20
 
-const COLS = 20, ROWS = 20;
-let CELL;   // computed from available space
-
-function resize() {
-  const wrap = document.getElementById('canvas-wrap');
-  const size = Math.min(window.innerWidth - 48, window.innerHeight - 260, 560);
-  CELL = Math.floor(size / COLS);
-  const W = CELL * COLS, H = CELL * ROWS;
-  canvas.width  = W;
-  canvas.height = H;
-  wrap.style.width  = W + 'px';
-  wrap.style.height = H + 'px';
-  if (state !== 'idle') draw();
-}
-
-// ─── COLOURS ──────────────────────────────────────────────────────────────────
-const C = {
-  bg:     '#1a1a2e',
-  wall:   '#16213e',
-  wallH:  '#0f3460',
-  snake0: '#39ff14',
-  snake1: '#2bcc0e',
-  snakeE: '#20a008',
-  apple:  '#e94560',
-  applel: '#ff7a8a',
-  star:   '#f5a623',
-  starl:  '#ffd27a',
-  grid:   'rgba(255,255,255,0.025)',
-  head:   '#39ff14',
-  eye:    '#0d1117',
+// ─── PALETTE ─────────────────────────────────────────────────────────────────
+const P = {
+  floorA:  '#3d2c10',  // stone tile A
+  floorB:  '#352510',  // stone tile B
+  wallD:   '#1a1008',  // dark wall
+  wallL:   'rgba(255,180,60,.09)', // wall top-left glow (torch)
+  wallS:   'rgba(0,0,0,.4)',       // wall bottom-right shadow
+  snakeH:  '#002802',  // head dark forest
+  snakeB:  '#228b22',  // body forest green
+  snakeT:  '#4a7c30',  // tail lighter
+  goldH:   '#e9c349',  // gold highlight
+  goldS:   '#735c00',  // gold shadow
+  silver:  '#b0b8c0',
+  silverS: '#70808c',
+  wine:    '#8b000099',
+  ember:   '#ff6600',
+  emberG:  '#ff220044',
+  crimson: '#610000',
+  stone:   '#221b03',
 };
 
-// ─── GAME STATE ───────────────────────────────────────────────────────────────
-let state    = 'idle'; // idle | playing | dead
-let map      = [];
-let snake    = [];
-let dir      = {x:1, y:0};
-let nextDir  = {x:1, y:0};
-let score    = 0;
-let best     = +(localStorage.getItem('snakeBest') || 0);
-let tickMs   = 150;
-let lastTick = 0;
-let particles= [];
-let flashCells = [];  // [{x,y,color,alpha,ttl}]
+// ─── GAME STATE ──────────────────────────────────────────────────────────────
+let state = 'idle', map = [], snake = [], dir = {x:1,y:0}, nextDir = {x:1,y:0};
+let score = 0, best = +(localStorage.getItem('sq_best') || 0);
+let tickMs = 150, lastTick = 0, particles = [], flashCells = [];
+let paused = false;
 
 // ─── INIT ─────────────────────────────────────────────────────────────────────
-function cloneMap() {
-  return BASE_MAP.map(r => [...r]);
-}
+function cloneMap() { return BASE_MAP.map(r => [...r]); }
 
 function startGame() {
   map = cloneMap();
-
-  // Starting position: center, going right
-  const sx = 9, sy = 9;
-  snake  = [{x:sx, y:sy}, {x:sx-1, y:sy}, {x:sx-2, y:sy}];
-  dir    = {x:1, y:0};
-  nextDir= {x:1, y:0};
-  score  = 0;
-  tickMs = 150;
-  particles  = [];
-  flashCells = [];
-  state  = 'playing';
-  lastTick = performance.now();
-
-  updateScore(0);
+  snake = [{x:9,y:9},{x:8,y:9},{x:7,y:9}];
+  dir = {x:1,y:0}; nextDir = {x:1,y:0};
+  score = 0; tickMs = 150; particles = []; flashCells = []; paused = false;
+  state = 'playing'; lastTick = performance.now();
+  updateHUD();
   document.getElementById('overlay').classList.add('hidden');
+  document.getElementById('btn-pause').querySelector('span').textContent = 'pause';
   requestAnimationFrame(loop);
 }
 
-// ─── MAIN LOOP ────────────────────────────────────────────────────────────────
+// ─── LOOP ─────────────────────────────────────────────────────────────────────
 function loop(ts) {
   if (state !== 'playing') return;
   draw();
-
-  if (ts - lastTick >= tickMs) {
-    lastTick = ts;
-    tick();
-  }
-
+  if (!paused && ts - lastTick >= tickMs) { lastTick = ts; tick(); }
   requestAnimationFrame(loop);
 }
 
+// ─── TICK ─────────────────────────────────────────────────────────────────────
 function tick() {
   dir = {...nextDir};
+  const nx = snake[0].x + dir.x, ny = snake[0].y + dir.y;
 
-  const head = snake[0];
-  const nx = head.x + dir.x;
-  const ny = head.y + dir.y;
-
-  // Collision: wall or out of bounds
-  if (nx < 0 || nx >= COLS || ny < 0 || ny >= ROWS || map[ny][nx] === 1) {
+  if (nx < 0 || nx >= COLS || ny < 0 || ny >= ROWS || map[ny][nx] === 1)
     return gameover();
-  }
-
-  // Collision: self
-  for (let i = 0; i < snake.length - 1; i++) {
+  for (let i = 0; i < snake.length - 1; i++)
     if (snake[i].x === nx && snake[i].y === ny) return gameover();
-  }
 
   const cell = map[ny][nx];
-  let grow = 0;
-  let pts  = 0;
-  let col  = null;
+  let grow = 0, pts = 0, col = null;
+  if (cell === 2) { grow = 1; pts = 10; col = P.silver;   spawnFood(2); tickMs = Math.max(80, tickMs - 2); }
+  if (cell === 3) { grow = 3; pts = 30; col = P.goldH;    spawnFood(3); }
 
-  if (cell === 2) {          // apple
-    grow = 1; pts = 10; col = C.apple;
-    spawnFood(2);
-    tickMs = Math.max(80, tickMs - 2);
-  } else if (cell === 3) {   // star
-    grow = 3; pts = 30; col = C.star;
-    spawnFood(3);
-  }
-
-  if (col) {
-    spawnParticles(nx, ny, col, 18);
-    flashCell(nx, ny, col);
-  }
+  if (col) { spawnParticles(nx, ny, col, 20); flashCells.push({x:nx,y:ny,color:col,alpha:1}); }
 
   snake.unshift({x:nx, y:ny});
-  for (let g = 0; g < grow; g++) {
-    const tail = snake[snake.length - 1];
-    snake.push({...tail});
-  }
-  if (grow === 0) snake.pop();
-
+  for (let g = 0; g < grow; g++) snake.push({...snake[snake.length-1]});
+  if (!grow) snake.pop();
   map[ny][nx] = 0;
-  updateScore(pts);
+  updateHUD(pts);
 }
 
-// ─── FOOD SPAWN ───────────────────────────────────────────────────────────────
+// ─── FOOD ─────────────────────────────────────────────────────────────────────
 function spawnFood(type) {
   const empty = [];
   for (let r = 0; r < ROWS; r++)
     for (let c = 0; c < COLS; c++)
       if (map[r][c] === 0 && !snake.some(s => s.x === c && s.y === r))
-        empty.push({x:c, y:r});
+        empty.push({x:c,y:r});
   if (!empty.length) return;
-  const pos = empty[Math.floor(Math.random() * empty.length)];
-  map[pos.y][pos.x] = type;
+  const p = empty[Math.floor(Math.random()*empty.length)];
+  map[p.y][p.x] = type;
 }
 
-// ─── SCORE ────────────────────────────────────────────────────────────────────
-function updateScore(delta) {
+// ─── HUD ──────────────────────────────────────────────────────────────────────
+function updateHUD(delta = 0) {
   score += delta;
-  if (score > best) { best = score; localStorage.setItem('snakeBest', best); }
-  const el = document.getElementById('score-display');
-  const bl = document.getElementById('best-display');
-  el.textContent = score;
-  bl.textContent = best;
+  if (score > best) { best = score; localStorage.setItem('sq_best', best); }
+  document.getElementById('score-display').textContent = score;
+  document.getElementById('best-display').textContent  = best;
+  document.getElementById('length-display').textContent = snake.length;
   if (delta) {
-    el.classList.remove('bump');
-    void el.offsetWidth;
-    el.classList.add('bump');
-    setTimeout(() => el.classList.remove('bump'), 200);
+    const el = document.getElementById('score-display');
+    el.classList.remove('bump'); void el.offsetWidth; el.classList.add('bump');
   }
-}
-
-// ─── PARTICLES ────────────────────────────────────────────────────────────────
-function spawnParticles(gx, gy, color, n) {
-  const cx = (gx + .5) * CELL;
-  const cy = (gy + .5) * CELL;
-  for (let i = 0; i < n; i++) {
-    const angle = Math.random() * Math.PI * 2;
-    const speed = 1.5 + Math.random() * 3;
-    particles.push({
-      x: cx, y: cy,
-      vx: Math.cos(angle) * speed,
-      vy: Math.sin(angle) * speed,
-      alpha: 1,
-      size: 2 + Math.random() * 3,
-      color,
-    });
-  }
-}
-
-function flashCell(gx, gy, color) {
-  flashCells.push({x:gx, y:gy, color, alpha: 1});
 }
 
 // ─── GAME OVER ────────────────────────────────────────────────────────────────
 function gameover() {
   state = 'dead';
+  saveQuestHistory(score);
   const ov = document.getElementById('overlay');
-  document.getElementById('overlay-title').textContent = 'GAME OVER';
-  document.getElementById('overlay-sub').innerHTML =
-    score >= best
-      ? `🏆 Nouveau record !<br>Score : <b style="color:#39ff14">${score}</b>`
-      : `Score : <b style="color:#39ff14">${score}</b><br>Record : <b style="color:#f5a623">${best}</b>`;
-  document.getElementById('overlay-score').style.display = 'none';
-  document.getElementById('btn-play').textContent = '↺ Rejouer';
+  document.getElementById('overlay-title').textContent = 'Quête Échouée';
+  document.getElementById('overlay-sub').innerHTML = score >= best
+    ? `⚜ Nouvelle Légende !<br><span style="font-style:normal;font-size:1.4em;color:#610000">${score} Deniers</span>`
+    : `<span style="font-style:normal;font-size:1.4em;color:#610000">${score} Deniers</span><br>Légende : ${best}`;
+  document.getElementById('btn-play').textContent = '↺ Nouvelle Quête';
   ov.classList.remove('hidden');
+}
+
+// ─── QUEST HISTORY ────────────────────────────────────────────────────────────
+function saveQuestHistory(s) {
+  let h = JSON.parse(localStorage.getItem('sq_history') || '[]');
+  h.unshift({score: s, date: new Date().toLocaleDateString('fr-FR',{day:'2-digit',month:'short'})});
+  h = h.slice(0, 5);
+  localStorage.setItem('sq_history', JSON.stringify(h));
+  renderQuestHistory(h);
+}
+function renderQuestHistory(h) {
+  const ul = document.getElementById('quest-history');
+  if (!h.length) return;
+  ul.innerHTML = h.map((q,i) =>
+    `<li class="flex justify-between items-center border-b border-dotted border-[#8e706b] py-1 ${i>0?'opacity-60':''}">
+       <span style="font-family:'EB Garamond';font-size:.85rem">${q.date}</span>
+       <span style="font-family:'Libre Caslon Text';font-weight:700;color:#610000">${q.score} ₯</span>
+     </li>`
+  ).join('');
+}
+
+// ─── PARTICLES ────────────────────────────────────────────────────────────────
+function spawnParticles(gx, gy, color, n) {
+  const cx = (gx+.5)*CELL, cy = (gy+.5)*CELL;
+  for (let i = 0; i < n; i++) {
+    const a = Math.random()*Math.PI*2, sp = 1.2 + Math.random()*3;
+    particles.push({x:cx,y:cy,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,alpha:1,size:2+Math.random()*3,color});
+  }
 }
 
 // ─── DRAW ─────────────────────────────────────────────────────────────────────
 function draw() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  // Background
-  ctx.fillStyle = C.bg;
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  // Grid lines
-  ctx.strokeStyle = C.grid;
-  ctx.lineWidth = 1;
-  for (let r = 0; r <= ROWS; r++) {
-    ctx.beginPath(); ctx.moveTo(0, r*CELL); ctx.lineTo(COLS*CELL, r*CELL); ctx.stroke();
-  }
-  for (let c = 0; c <= COLS; c++) {
-    ctx.beginPath(); ctx.moveTo(c*CELL, 0); ctx.lineTo(c*CELL, ROWS*CELL); ctx.stroke();
-  }
+  drawFloor();
 
   // Flash cells
   for (const f of flashCells) {
-    ctx.save();
-    ctx.globalAlpha = f.alpha * .5;
+    ctx.save(); ctx.globalAlpha = f.alpha * .45;
     ctx.fillStyle = f.color;
     ctx.fillRect(f.x*CELL, f.y*CELL, CELL, CELL);
-    ctx.restore();
-    f.alpha -= .12;
+    ctx.restore(); f.alpha -= .1;
   }
   flashCells = flashCells.filter(f => f.alpha > 0);
 
-  // Map cells
-  for (let r = 0; r < ROWS; r++) {
+  // Map objects
+  for (let r = 0; r < ROWS; r++)
     for (let c = 0; c < COLS; c++) {
-      const v = map[r][c];
-      const x = c * CELL, y = r * CELL;
-
-      if (v === 1) {
-        drawWall(x, y);
-      } else if (v === 2) {
-        drawApple(x, y);
-      } else if (v === 3) {
-        drawStar(x, y);
-      }
+      const v = map[r][c], x = c*CELL, y = r*CELL;
+      if (v === 1) drawWall(x, y);
+      else if (v === 2) drawChalice(x, y);
+      else if (v === 3) drawCrown(x, y);
     }
-  }
 
-  // Snake
   drawSnake();
 
-  // Particles
+  // Particles (gold coins / sparks)
   for (const p of particles) {
-    ctx.save();
-    ctx.globalAlpha = p.alpha;
-    ctx.fillStyle = p.color;
-    ctx.shadowColor = p.color;
-    ctx.shadowBlur = 6;
-    ctx.beginPath();
-    ctx.arc(p.x, p.y, p.size, 0, Math.PI*2);
-    ctx.fill();
+    ctx.save(); ctx.globalAlpha = p.alpha;
+    ctx.fillStyle = p.color; ctx.shadowColor = p.color; ctx.shadowBlur = 5;
+    ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI*2); ctx.fill();
     ctx.restore();
-    p.x  += p.vx; p.y  += p.vy;
-    p.vy += .15;
-    p.alpha -= .04;
+    p.x += p.vx; p.y += p.vy; p.vy += .18; p.alpha -= .04;
   }
   particles = particles.filter(p => p.alpha > 0);
-}
 
-// ─── DRAW HELPERS ─────────────────────────────────────────────────────────────
-function roundRect(ctx, x, y, w, h, r) {
-  ctx.beginPath();
-  ctx.moveTo(x+r, y);
-  ctx.lineTo(x+w-r, y);
-  ctx.quadraticCurveTo(x+w, y, x+w, y+r);
-  ctx.lineTo(x+w, y+h-r);
-  ctx.quadraticCurveTo(x+w, y+h, x+w-r, y+h);
-  ctx.lineTo(x+r, y+h);
-  ctx.quadraticCurveTo(x, y+h, x, y+h-r);
-  ctx.lineTo(x, y+r);
-  ctx.quadraticCurveTo(x, y, x+r, y);
-  ctx.closePath();
-}
-
-function drawWall(x, y) {
-  const pad = 1;
-  // Base fill
-  ctx.fillStyle = C.wall;
-  ctx.fillRect(x, y, CELL, CELL);
-  // Highlight edges
-  const g = ctx.createLinearGradient(x, y, x+CELL, y+CELL);
-  g.addColorStop(0, C.wallH + '88');
-  g.addColorStop(1, C.wall  + '00');
-  ctx.fillStyle = g;
-  ctx.fillRect(x, y, CELL, CELL);
-  // Top/left bevel
-  ctx.fillStyle = 'rgba(255,255,255,0.04)';
-  ctx.fillRect(x, y, CELL, 2);
-  ctx.fillRect(x, y, 2, CELL);
-}
-
-function drawApple(x, y) {
-  const cx = x + CELL/2, cy = y + CELL/2;
-  const r  = CELL * .32;
-  ctx.save();
-  ctx.shadowColor = C.apple;
-  ctx.shadowBlur  = 10;
-  // Body
-  const g = ctx.createRadialGradient(cx - r*.3, cy - r*.3, r*.1, cx, cy, r);
-  g.addColorStop(0, C.applel);
-  g.addColorStop(1, C.apple);
-  ctx.fillStyle = g;
-  ctx.beginPath();
-  ctx.arc(cx, cy, r, 0, Math.PI*2);
-  ctx.fill();
-  // Stem
-  ctx.strokeStyle = '#2bcc0e';
-  ctx.lineWidth = Math.max(1.5, CELL*.06);
-  ctx.lineCap = 'round';
-  ctx.beginPath();
-  ctx.moveTo(cx, cy - r);
-  ctx.quadraticCurveTo(cx + r*.4, cy - r*1.4, cx + r*.6, cy - r*1.2);
-  ctx.stroke();
-  // Shine
-  ctx.fillStyle = 'rgba(255,255,255,.35)';
-  ctx.beginPath();
-  ctx.ellipse(cx - r*.25, cy - r*.25, r*.25, r*.15, -Math.PI/4, 0, Math.PI*2);
-  ctx.fill();
-  ctx.restore();
-}
-
-function drawStar(x, y) {
-  const cx = x + CELL/2, cy = y + CELL/2;
-  const R = CELL * .36, r2 = R * .45;
-  const n = 5;
-  ctx.save();
-  ctx.shadowColor = C.star;
-  ctx.shadowBlur  = 14;
-  const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, R);
-  g.addColorStop(0, C.starl);
-  g.addColorStop(1, C.star);
-  ctx.fillStyle = g;
-  ctx.beginPath();
-  for (let i = 0; i < n*2; i++) {
-    const angle = (i * Math.PI / n) - Math.PI/2;
-    const rad   = i % 2 === 0 ? R : r2;
-    const px    = cx + Math.cos(angle) * rad;
-    const py    = cy + Math.sin(angle) * rad;
-    i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+  // Pause veil
+  if (paused) {
+    ctx.save(); ctx.globalAlpha = .55; ctx.fillStyle = P.stone;
+    ctx.fillRect(0, 0, COLS*CELL, ROWS*CELL); ctx.restore();
+    ctx.save();
+    ctx.fillStyle = P.goldH; ctx.shadowColor = P.goldH; ctx.shadowBlur = 16;
+    ctx.font = `bold 28px 'Libre Caslon Text', serif`;
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText('⏸ Pause', COLS*CELL/2, ROWS*CELL/2);
+    ctx.restore();
   }
-  ctx.closePath();
-  ctx.fill();
-  // Inner glow ring
-  ctx.strokeStyle = 'rgba(255,255,255,.3)';
-  ctx.lineWidth = 1;
-  ctx.stroke();
+}
+
+// ── Stone floor tiles ────────────────────────────────────────────────────────
+function drawFloor() {
+  for (let r = 0; r < ROWS; r++)
+    for (let c = 0; c < COLS; c++) {
+      ctx.fillStyle = (r + c) % 2 === 0 ? P.floorA : P.floorB;
+      ctx.fillRect(c*CELL, r*CELL, CELL, CELL);
+      // Subtle mortar line
+      ctx.strokeStyle = 'rgba(0,0,0,.25)'; ctx.lineWidth = .5;
+      ctx.strokeRect(c*CELL+.25, r*CELL+.25, CELL-.5, CELL-.5);
+    }
+}
+
+// ── Wall block (carved stone) ────────────────────────────────────────────────
+function drawWall(x, y) {
+  ctx.fillStyle = P.wallD; ctx.fillRect(x, y, CELL, CELL);
+  // Gradient sheen (torch from top-left)
+  const g = ctx.createLinearGradient(x, y, x+CELL, y+CELL);
+  g.addColorStop(0, 'rgba(255,180,60,.1)'); g.addColorStop(1, 'rgba(0,0,0,.3)');
+  ctx.fillStyle = g; ctx.fillRect(x, y, CELL, CELL);
+  // Bevel highlights
+  ctx.fillStyle = 'rgba(255,200,80,.07)';
+  ctx.fillRect(x, y, CELL, 2); ctx.fillRect(x, y, 2, CELL);
+  ctx.fillStyle = 'rgba(0,0,0,.35)';
+  ctx.fillRect(x, y+CELL-2, CELL, 2); ctx.fillRect(x+CELL-2, y, 2, CELL);
+}
+
+// ── Chalice / goblet (food +10) ──────────────────────────────────────────────
+function drawChalice(x, y) {
+  const cx = x+CELL/2, cy = y+CELL/2, s = CELL*.3;
+  ctx.save(); ctx.shadowColor = P.silver; ctx.shadowBlur = 8;
+  // Cup body (trapezoid)
+  ctx.fillStyle = P.silver;
+  ctx.beginPath();
+  ctx.moveTo(cx-s*.75, cy-s*.85); ctx.lineTo(cx+s*.75, cy-s*.85);
+  ctx.lineTo(cx+s*.5,  cy+s*.05); ctx.lineTo(cx-s*.5,  cy+s*.05);
+  ctx.closePath(); ctx.fill();
+  // Wine surface
+  ctx.fillStyle = P.wine;
+  ctx.fillRect(cx-s*.72, cy-s*.82, s*1.44, s*.28);
+  // Stem
+  ctx.fillStyle = P.silverS;
+  ctx.fillRect(cx-s*.12, cy+s*.05, s*.24, s*.55);
+  // Base
+  ctx.fillStyle = P.silver;
+  ctx.fillRect(cx-s*.55, cy+s*.6, s*1.1, s*.22);
+  // Shine
+  ctx.fillStyle = 'rgba(255,255,255,.4)';
+  ctx.fillRect(cx-s*.6, cy-s*.8, s*.22, s*.5);
   ctx.restore();
 }
 
+// ── Crown (bonus +30) ────────────────────────────────────────────────────────
+function drawCrown(x, y) {
+  const px = x+2, py = y+4, sz = CELL-4;
+  ctx.save(); ctx.shadowColor = P.goldH; ctx.shadowBlur = 12;
+  const g = ctx.createLinearGradient(px, py, px, py+sz);
+  g.addColorStop(0, '#ffd27a'); g.addColorStop(1, P.goldH);
+  ctx.fillStyle = g;
+  ctx.beginPath();
+  ctx.moveTo(px,       py+sz);
+  ctx.lineTo(px+sz,    py+sz);
+  ctx.lineTo(px+sz,    py+sz*.5);
+  ctx.lineTo(px+sz*.8, py+sz*.25);
+  ctx.lineTo(px+sz*.6, py+sz*.5);
+  ctx.lineTo(px+sz*.5, py+sz*.05);
+  ctx.lineTo(px+sz*.4, py+sz*.5);
+  ctx.lineTo(px+sz*.2, py+sz*.25);
+  ctx.lineTo(px,       py+sz*.5);
+  ctx.closePath(); ctx.fill();
+  // Jewels
+  ctx.shadowBlur = 4; ctx.shadowColor = '#ff0000';
+  ctx.fillStyle = P.crimson;
+  [[px+sz*.2,py+sz*.55],[px+sz*.5,py+sz*.2],[px+sz*.8,py+sz*.55]].forEach(([jx,jy]) => {
+    ctx.beginPath(); ctx.arc(jx, jy, sz*.07, 0, Math.PI*2); ctx.fill();
+  });
+  ctx.restore();
+}
+
+// ── Snake (diamond scales) ───────────────────────────────────────────────────
 function drawSnake() {
   if (!snake.length) return;
   const len = snake.length;
-
-  for (let i = len - 1; i >= 0; i--) {
-    const seg  = snake[i];
-    const t    = i / len;          // 0 = head, 1 = tail
-    const pad  = Math.max(1, CELL * .08);
-    const x    = seg.x * CELL + pad;
-    const y    = seg.y * CELL + pad;
-    const w    = CELL - pad*2;
-    const h    = CELL - pad*2;
-    const cr   = Math.max(3, CELL*.22);
+  for (let i = len-1; i >= 0; i--) {
+    const seg = snake[i], t = i/len;
+    const cx = seg.x*CELL+CELL/2, cy = seg.y*CELL+CELL/2;
+    const sz = CELL * .68;
+    const isHead = i === 0;
 
     ctx.save();
+    ctx.translate(cx, cy); ctx.rotate(Math.PI/4);
 
-    if (i === 0) {
-      // Head: brighter + glow
-      ctx.shadowColor = C.snake0;
-      ctx.shadowBlur  = 14;
-      const g = ctx.createLinearGradient(x, y, x+w, y+h);
-      g.addColorStop(0, C.snake0);
-      g.addColorStop(1, C.snake1);
+    if (isHead) {
+      ctx.shadowColor = P.snakeH; ctx.shadowBlur = 14;
+      const g = ctx.createLinearGradient(-sz/2,-sz/2,sz/2,sz/2);
+      g.addColorStop(0, '#005505'); g.addColorStop(1, P.snakeH);
       ctx.fillStyle = g;
-      roundRect(ctx, x, y, w, h, cr);
-      ctx.fill();
-
-      // Eyes
-      const eyeR = Math.max(1.5, CELL * .09);
-      const eyeOff = CELL * .2;
-      let ex1, ey1, ex2, ey2;
-      const hx = seg.x * CELL + CELL/2;
-      const hy = seg.y * CELL + CELL/2;
-      if (dir.x === 1)  { ex1 = hx+eyeOff*1.1; ey1 = hy-eyeOff; ex2 = hx+eyeOff*1.1; ey2 = hy+eyeOff; }
-      else if (dir.x===-1){ ex1 = hx-eyeOff*1.1; ey1 = hy-eyeOff; ex2 = hx-eyeOff*1.1; ey2 = hy+eyeOff; }
-      else if (dir.y === 1){ ex1 = hx-eyeOff; ey1 = hy+eyeOff*1.1; ex2 = hx+eyeOff; ey2 = hy+eyeOff*1.1; }
-      else               { ex1 = hx-eyeOff; ey1 = hy-eyeOff*1.1; ex2 = hx+eyeOff; ey2 = hy-eyeOff*1.1; }
-      ctx.shadowBlur = 0;
-      ctx.fillStyle  = C.eye;
-      ctx.beginPath(); ctx.arc(ex1, ey1, eyeR, 0, Math.PI*2); ctx.fill();
-      ctx.beginPath(); ctx.arc(ex2, ey2, eyeR, 0, Math.PI*2); ctx.fill();
+      ctx.fillRect(-sz/2, -sz/2, sz, sz);
+      // Gold trim
+      ctx.strokeStyle = P.goldH; ctx.lineWidth = 2;
+      ctx.strokeRect(-sz/2, -sz/2, sz, sz);
     } else {
-      // Body: gradient from front to tail
-      const bright = 1 - t * .45;
-      const alpha  = .92 - t * .25;
-      ctx.globalAlpha = alpha;
-      ctx.shadowColor = C.snake1;
-      ctx.shadowBlur  = 4;
-      const g = ctx.createLinearGradient(x, y, x+w, y+h);
-      g.addColorStop(0, lerpColor(C.snake1, C.snakeE, t));
-      g.addColorStop(1, lerpColor(C.snakeE, '#0d3a00', t));
+      ctx.globalAlpha = .92 - t*.22;
+      ctx.shadowColor = P.snakeB; ctx.shadowBlur = 3;
+      const g = ctx.createLinearGradient(-sz/2,-sz/2,sz/2,sz/2);
+      g.addColorStop(0, lerpColor(P.snakeB, P.snakeT, t));
+      g.addColorStop(1, lerpColor(P.snakeT, '#2a4a18', t));
       ctx.fillStyle = g;
-      roundRect(ctx, x, y, w, h, cr);
-      ctx.fill();
+      ctx.fillRect(-sz/2, -sz/2, sz, sz);
+      // Scale shimmer
+      ctx.fillStyle = 'rgba(150,230,150,.1)';
+      ctx.fillRect(-sz/2, -sz/2, sz/2, sz/2);
     }
     ctx.restore();
+
+    // Eyes (on head, drawn after rotation reset)
+    if (isHead) {
+      const er = Math.max(2, CELL*.1), eo = CELL*.18;
+      let e1x, e1y, e2x, e2y;
+      if      (dir.x===1)  { e1x=cx+eo*1.2; e1y=cy-eo; e2x=cx+eo*1.2; e2y=cy+eo; }
+      else if (dir.x===-1) { e1x=cx-eo*1.2; e1y=cy-eo; e2x=cx-eo*1.2; e2y=cy+eo; }
+      else if (dir.y===1)  { e1x=cx-eo; e1y=cy+eo*1.2; e2x=cx+eo; e2y=cy+eo*1.2; }
+      else                 { e1x=cx-eo; e1y=cy-eo*1.2; e2x=cx+eo; e2y=cy-eo*1.2; }
+      ctx.save();
+      ctx.shadowColor = P.ember; ctx.shadowBlur = 6;
+      ctx.fillStyle = P.ember;
+      ctx.beginPath(); ctx.arc(e1x,e1y,er,0,Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc(e2x,e2y,er,0,Math.PI*2); ctx.fill();
+      ctx.restore();
+    }
   }
 }
 
 function lerpColor(a, b, t) {
-  const ah = parseInt(a.slice(1), 16);
-  const bh = parseInt(b.slice(1), 16);
-  const ar = (ah >> 16) & 0xff, ag = (ah >> 8) & 0xff, ab = ah & 0xff;
-  const br = (bh >> 16) & 0xff, bg = (bh >> 8) & 0xff, bb = bh & 0xff;
-  const rr = Math.round(ar + (br-ar)*t);
-  const rg = Math.round(ag + (bg-ag)*t);
-  const rb = Math.round(ab + (bb-ab)*t);
-  return '#' + ((rr<<16)|(rg<<8)|rb).toString(16).padStart(6,'0');
+  const ah=parseInt(a.slice(1),16), bh=parseInt(b.slice(1),16);
+  const rr=Math.round(((ah>>16)&0xff)+(((bh>>16)&0xff)-((ah>>16)&0xff))*t);
+  const rg=Math.round(((ah>>8)&0xff)+(((bh>>8)&0xff)-((ah>>8)&0xff))*t);
+  const rb=Math.round((ah&0xff)+((bh&0xff)-(ah&0xff))*t);
+  return '#'+((rr<<16)|(rg<<8)|rb).toString(16).padStart(6,'0');
 }
+
+// ─── SIDEBAR PREVIEWS ─────────────────────────────────────────────────────────
+function renderPreview(canvasId, drawFn) {
+  const c = document.getElementById(canvasId);
+  if (!c) return;
+  const ctx2 = c.getContext('2d');
+  ctx2.clearRect(0,0,c.width,c.height);
+  ctx2.fillStyle = '#fdedc4';
+  ctx2.fillRect(0,0,c.width,c.height);
+  drawFn(ctx2, c.width/2, c.height/2, c.width*.75);
+}
+
+function previewCrown(c, cx, cy, sz) {
+  const px=cx-sz/2, py=cy-sz*.35;
+  c.save(); c.shadowColor=P.goldH; c.shadowBlur=8;
+  const g=c.createLinearGradient(px,py,px,py+sz*.7);
+  g.addColorStop(0,'#ffd27a'); g.addColorStop(1,P.goldH);
+  c.fillStyle=g;
+  c.beginPath();
+  c.moveTo(px,      py+sz*.7); c.lineTo(px+sz,   py+sz*.7);
+  c.lineTo(px+sz,   py+sz*.35); c.lineTo(px+sz*.8,py+sz*.17);
+  c.lineTo(px+sz*.6,py+sz*.35); c.lineTo(px+sz*.5,py);
+  c.lineTo(px+sz*.4,py+sz*.35); c.lineTo(px+sz*.2,py+sz*.17);
+  c.lineTo(px,      py+sz*.35);
+  c.closePath(); c.fill();
+  c.shadowBlur=3; c.shadowColor='#ff0000'; c.fillStyle=P.crimson;
+  [[px+sz*.2,py+sz*.38],[px+sz*.5,py+sz*.12],[px+sz*.8,py+sz*.38]].forEach(([jx,jy])=>{
+    c.beginPath(); c.arc(jx,jy,sz*.05,0,Math.PI*2); c.fill();
+  });
+  c.restore();
+}
+
+function previewChalice(c, cx, cy, sz) {
+  const s=sz*.28;
+  c.save(); c.shadowColor=P.silver; c.shadowBlur=6;
+  c.fillStyle=P.silver;
+  c.beginPath();
+  c.moveTo(cx-s*.75,cy-s*.9); c.lineTo(cx+s*.75,cy-s*.9);
+  c.lineTo(cx+s*.5,cy); c.lineTo(cx-s*.5,cy); c.closePath(); c.fill();
+  c.fillStyle=P.wine; c.fillRect(cx-s*.72,cy-s*.88,s*1.44,s*.28);
+  c.fillStyle=P.silverS; c.fillRect(cx-s*.12,cy,s*.24,s*.55);
+  c.fillStyle=P.silver; c.fillRect(cx-s*.55,cy+s*.55,s*1.1,s*.22);
+  c.restore();
+}
+
+// ─── BESTIARY CANVAS (animated preview) ───────────────────────────────────────
+(function bestiaryAnim() {
+  const bc = document.getElementById('bestiary-canvas');
+  if (!bc) return;
+  const bc2 = bc.getContext('2d');
+  let angle = 0;
+  function drawBestiary() {
+    bc2.fillStyle = P.forest; bc2.fillRect(0,0,160,160);
+    // Decorative border
+    bc2.strokeStyle = P.goldH; bc2.lineWidth = 2;
+    bc2.strokeRect(4,4,152,152);
+    // Sinuous snake body
+    bc2.save();
+    bc2.translate(80,80); bc2.rotate(angle*.3);
+    const pts = 8;
+    for (let i = pts-1; i >= 0; i--) {
+      const a = (i/pts)*Math.PI*2 + angle;
+      const r = 42 - i*2;
+      const sx = Math.cos(a)*r, sy = Math.sin(a)*r*.6;
+      const sz = 12 - i*.8;
+      bc2.save(); bc2.translate(sx,sy); bc2.rotate(a+Math.PI/4);
+      bc2.fillStyle = i===0 ? P.snakeH : P.snakeB;
+      bc2.globalAlpha = .95 - i*.05;
+      if (i===0) { bc2.shadowColor=P.goldH; bc2.shadowBlur=8; }
+      bc2.fillRect(-sz/2,-sz/2,sz,sz);
+      if (i===0) {
+        bc2.strokeStyle=P.goldH; bc2.lineWidth=1.5;
+        bc2.strokeRect(-sz/2,-sz/2,sz,sz);
+      }
+      bc2.restore();
+    }
+    bc2.restore();
+    // Latin text
+    bc2.fillStyle = 'rgba(233,195,73,.5)';
+    bc2.font = 'italic 9px "EB Garamond"';
+    bc2.textAlign = 'center';
+    bc2.fillText('SERPENS MAGNIFICUS', 80, 150);
+    angle += 0.022;
+    requestAnimationFrame(drawBestiary);
+  }
+  drawBestiary();
+})();
 
 // ─── INPUT ────────────────────────────────────────────────────────────────────
 const KEY_DIR = {
-  ArrowUp:    {x:0, y:-1}, ArrowDown: {x:0, y:1},
-  ArrowLeft:  {x:-1,y:0},  ArrowRight:{x:1, y:0},
-  w: {x:0,y:-1}, s: {x:0,y:1}, a: {x:-1,y:0}, d: {x:1,y:0},
-  W: {x:0,y:-1}, S: {x:0,y:1}, A: {x:-1,y:0}, D: {x:1,y:0},
+  ArrowUp:{x:0,y:-1}, ArrowDown:{x:0,y:1}, ArrowLeft:{x:-1,y:0}, ArrowRight:{x:1,y:0},
+  w:{x:0,y:-1}, s:{x:0,y:1}, a:{x:-1,y:0}, d:{x:1,y:0},
+  W:{x:0,y:-1}, S:{x:0,y:1}, A:{x:-1,y:0}, D:{x:1,y:0},
 };
-
 document.addEventListener('keydown', e => {
-  const d = KEY_DIR[e.key];
-  if (d) {
-    e.preventDefault();
-    // Prevent reversing
-    if (d.x !== -dir.x || d.y !== -dir.y) nextDir = d;
-    // Start game on keypress if idle
-    if (state === 'idle') { document.getElementById('btn-play').click(); }
-    return;
-  }
+  if (e.key === 'Escape' || e.key === 'p') { togglePause(); return; }
   if (e.key === 'Enter' || e.key === ' ') {
     e.preventDefault();
-    document.getElementById('btn-play').click();
+    if (state !== 'playing') document.getElementById('btn-play').click(); else togglePause();
+    return;
   }
+  const d = KEY_DIR[e.key];
+  if (!d) return;
+  e.preventDefault();
+  if (d.x !== -dir.x || d.y !== -dir.y) nextDir = d;
+  if (state === 'idle') document.getElementById('btn-play').click();
 });
 
-// Touch / swipe support
 let touchStart = null;
-canvas.addEventListener('touchstart', e => {
-  touchStart = {x: e.touches[0].clientX, y: e.touches[0].clientY};
-}, {passive: true});
+canvas.addEventListener('touchstart', e => { touchStart={x:e.touches[0].clientX,y:e.touches[0].clientY}; },{passive:true});
 canvas.addEventListener('touchend', e => {
   if (!touchStart) return;
-  const dx = e.changedTouches[0].clientX - touchStart.x;
-  const dy = e.changedTouches[0].clientY - touchStart.y;
-  touchStart = null;
-  if (Math.abs(dx) < 10 && Math.abs(dy) < 10) return;
-  let d;
-  if (Math.abs(dx) > Math.abs(dy)) d = dx > 0 ? {x:1,y:0} : {x:-1,y:0};
-  else                              d = dy > 0 ? {x:0,y:1} : {x:0,y:-1};
-  if (d.x !== -dir.x || d.y !== -dir.y) nextDir = d;
-}, {passive: true});
+  const dx=e.changedTouches[0].clientX-touchStart.x, dy=e.changedTouches[0].clientY-touchStart.y;
+  touchStart=null;
+  if (Math.abs(dx)<10&&Math.abs(dy)<10) return;
+  const d=Math.abs(dx)>Math.abs(dy)?(dx>0?{x:1,y:0}:{x:-1,y:0}):(dy>0?{x:0,y:1}:{x:0,y:-1});
+  if (d.x!==-dir.x||d.y!==-dir.y) nextDir=d;
+},{passive:true});
 
-document.getElementById('btn-play').addEventListener('click', () => {
-  startGame();
-});
+function togglePause() {
+  if (state!=='playing') return;
+  paused = !paused;
+  document.getElementById('btn-pause').querySelector('span').textContent = paused ? 'play_arrow' : 'pause';
+  if (!paused) { lastTick=performance.now(); requestAnimationFrame(loop); }
+}
+
+document.getElementById('btn-play').addEventListener('click', startGame);
+document.getElementById('btn-pause').addEventListener('click', togglePause);
 
 // ─── BOOT ─────────────────────────────────────────────────────────────────────
 document.getElementById('best-display').textContent = best;
-resize();
-window.addEventListener('resize', resize);
+renderQuestHistory(JSON.parse(localStorage.getItem('sq_history')||'[]'));
+renderPreview('crown-preview',   previewCrown);
+renderPreview('chalice-preview', previewChalice);
 
-// Idle animation — draw the map without snake
+// Idle map preview
 (function idleDraw() {
   if (state !== 'idle') return;
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  ctx.fillStyle = C.bg;
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-  ctx.strokeStyle = C.grid;
-  ctx.lineWidth = 1;
-  for (let r = 0; r <= ROWS; r++) {
-    ctx.beginPath(); ctx.moveTo(0,r*CELL); ctx.lineTo(COLS*CELL,r*CELL); ctx.stroke();
+  drawFloor();
+  for (let r=0;r<ROWS;r++) for (let c=0;c<COLS;c++) {
+    const v=BASE_MAP[r][c], x=c*CELL, y=r*CELL;
+    if (v===1) drawWall(x,y);
+    else if (v===2) drawChalice(x,y);
+    else if (v===3) drawCrown(x,y);
   }
-  for (let c = 0; c <= COLS; c++) {
-    ctx.beginPath(); ctx.moveTo(c*CELL,0); ctx.lineTo(c*CELL,ROWS*CELL); ctx.stroke();
-  }
-  const tempMap = cloneMap();
-  for (let r = 0; r < ROWS; r++)
-    for (let c = 0; c < COLS; c++) {
-      const v = tempMap[r][c];
-      const x = c*CELL, y = r*CELL;
-      if (v === 1) drawWall(x,y);
-      else if (v === 2) drawApple(x,y);
-      else if (v === 3) drawStar(x,y);
-    }
   requestAnimationFrame(idleDraw);
 })();
 </script>
