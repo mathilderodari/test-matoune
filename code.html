@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+
+<html class="light" lang="fr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Serpent's Quest - Medieval Snake</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:wght@400;600;700&amp;family=EB+Garamond:ital,wght@0,400..800;1,400..800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-highest": "#f1e1b9",
+                        "primary-container": "#8b0000",
+                        "surface-container-low": "#fff3d7",
+                        "on-background": "#221b03",
+                        "secondary-fixed-dim": "#e9c349",
+                        "on-error-container": "#93000a",
+                        "outline-variant": "#e3beb8",
+                        "on-primary-container": "#ff907f",
+                        "on-error": "#ffffff",
+                        "secondary-fixed": "#ffe088",
+                        "inverse-on-surface": "#fff0ca",
+                        "on-tertiary-fixed": "#002201",
+                        "primary-fixed-dim": "#ffb4a8",
+                        "on-secondary-fixed-variant": "#574500",
+                        "on-secondary-fixed": "#241a00",
+                        "on-tertiary-container": "#5fc454",
+                        "surface-bright": "#fff8f0",
+                        "inverse-surface": "#383014",
+                        "surface": "#fff8f0",
+                        "on-tertiary": "#ffffff",
+                        "on-surface-variant": "#5a403c",
+                        "tertiary-fixed-dim": "#77dd6a",
+                        "on-secondary-container": "#745c00",
+                        "on-primary": "#ffffff",
+                        "surface-container": "#fdedc4",
+                        "tertiary-container": "#004e06",
+                        "primary-fixed": "#ffdad4",
+                        "surface-container-high": "#f7e7bf",
+                        "surface-tint": "#b52619",
+                        "on-primary-fixed": "#410000",
+                        "primary": "#610000",
+                        "on-tertiary-fixed-variant": "#005307",
+                        "error": "#ba1a1a",
+                        "surface-dim": "#e9d9b1",
+                        "surface-variant": "#f1e1b9",
+                        "secondary-container": "#fed65b",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary": "#735c00",
+                        "on-secondary": "#ffffff",
+                        "on-primary-fixed-variant": "#920703",
+                        "error-container": "#ffdad6",
+                        "tertiary-fixed": "#92fa83",
+                        "background": "#fff8f0",
+                        "inverse-primary": "#ffb4a8",
+                        "on-surface": "#221b03",
+                        "outline": "#8e706b",
+                        "tertiary": "#003503"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-sm": "0.5rem",
+                        "gutter": "1.5rem",
+                        "stack-md": "1rem",
+                        "stack-lg": "2rem",
+                        "margin-page": "2rem"
+                    },
+                    "fontFamily": {
+                        "headline-xl": ["Libre Caslon Text"],
+                        "headline-lg-mobile": ["Libre Caslon Text"],
+                        "body-md": ["EB Garamond"],
+                        "body-lg": ["EB Garamond"],
+                        "headline-md": ["Libre Caslon Text"],
+                        "label-md": ["EB Garamond"],
+                        "headline-lg": ["Libre Caslon Text"]
+                    },
+                    "fontSize": {
+                        "headline-xl": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "700"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "body-lg": ["20px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.1em", "fontWeight": "600"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>.material-symbols-outlined {
+    font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24
+    }
+.parchment-texture {
+    background-color: #f1e1b9;
+    background-image: url(https://lh3.googleusercontent.com/aida-public/AB6AXuDVYbUyhN3zUfVUUl_pkvJ1_2tJtOHhqnf--h5G4vdzHkZCE9Gt25QhrTfjJqSM32FItzXfWY68Fe57wWKHOEMv8TjQ0tIvedpnkkbpo3bI8H571V8B0mtA2U4EpgAmo3WblC5VBD9Dja4QAUJzyr8k1fxC20oSK_gWNY317LlGwJfJURwW60lgQSjo5KpiltZXLIScC0THrrX9GN_ufea1yywP1NJPaT8rAAEWY0ESlyoITSoKGJjX0e7afErMhKxXLpu7J9HL0oEu)
+    }
+.stone-texture {
+    background-color: #383014;
+    background-image: url(https://lh3.googleusercontent.com/aida-public/AB6AXuDgWkXMebqWRXuEdsBuyXhu_tlRAx1e9RDrdsZrTLP4LOpyw9abnUpzWTkwY0IYq_655zFuLaI4XMLWhUWuxwE3gILpjmmDD5Zc7WXVIGGxgK4gjaJXwDu7Xhrv1E4lTbaAvQif0phkHgLIJb7lM8EzJAdiJTd59Dz3oQn8AW11UMESijDyD_0OLhKFmi8RUhVC_DE1Sir-zd5pOzOPwPtE7aCR_3m-iTw6Ml2lOpMEFn29UMlYuKWLxJD6s4u0y-a15BzEd5EG237K)
+    }
+.game-grid {
+    display: grid;
+    grid-template-columns: repeat(20, 1fr);
+    grid-template-rows: repeat(20, 1fr);
+    aspect-ratio: 1/1
+    }
+.wax-seal {
+    background: radial-gradient(circle at 30% 30%, #b52619, #610000);
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.4), inset -2px -2px 4px rgba(0, 0, 0, 0.3);
+    transition: transform 0.1s ease-in-out
+    }
+.wax-seal:active {
+    transform: scale(0.92)
+    }
+.iron-border {
+    border: 2px solid #5a403c;
+    position: relative
+    }
+.iron-border::before, .iron-border::after, .iron-border .corner::before, .iron-border .corner::after {
+    content: "";
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background: #221b03;
+    border-radius: 50%;
+    box-shadow: inset 1px 1px 2px #5a403c
+    }
+.rivet-tl {
+    top: -4px;
+    left: -4px
+    }
+.rivet-tr {
+    top: -4px;
+    right: -4px
+    }
+.rivet-bl {
+    bottom: -4px;
+    left: -4px
+    }
+.rivet-br {
+    bottom: -4px;
+    right: -4px
+    }</style>
+</head>
+<body class="bg-inverse-surface text-on-surface font-body-md text-body-md min-h-screen flex flex-col overflow-hidden">
+<!-- Top Navigation Anchor (Shared Component) -->
+<header class="bg-surface-dim dark:bg-inverse-surface border-b-2 border-outline dark:border-outline-variant shadow-sm z-50">
+<div class="flex justify-between items-center w-full px-gutter h-16 max-w-7xl mx-auto">
+<div class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed-dim">
+                Serpent's Quest
+            </div>
+<div class="hidden md:flex items-center gap-8">
+<a class="text-primary-container font-bold underline font-label-md text-label-md hover:bg-surface-container-highest transition-colors px-3 py-1 rounded" href="#">Play</a>
+<a class="text-on-surface-variant font-label-md text-label-md hover:bg-surface-container-highest transition-colors px-3 py-1 rounded" href="#">Leaderboard</a>
+<a class="text-on-surface-variant font-label-md text-label-md hover:bg-surface-container-highest transition-colors px-3 py-1 rounded" href="#">Artifacts</a>
+<a class="text-on-surface-variant font-label-md text-label-md hover:bg-surface-container-highest transition-colors px-3 py-1 rounded" href="#">Lore</a>
+</div>
+<div class="flex items-center gap-4">
+<button class="flex items-center justify-center wax-seal rounded-full w-10 h-10 text-on-primary">
+<span class="material-symbols-outlined">pause</span>
+</button>
+<button class="flex items-center justify-center wax-seal rounded-full w-10 h-10 text-on-primary">
+<span class="material-symbols-outlined">settings</span>
+</button>
+</div>
+</div>
+</header>
+<main class="flex-grow flex flex-col md:flex-row p-gutter gap-gutter max-w-7xl mx-auto w-full overflow-y-auto">
+<!-- Left Sidebar: Last Quests -->
+<aside class="w-full md:w-64 flex flex-col gap-stack-lg">
+<section class="bg-surface-container-low p-stack-md rounded-xl iron-border parchment-texture">
+<div class="rivet-tl"></div><div class="rivet-tr"></div><div class="rivet-bl"></div><div class="rivet-br"></div>
+<h2 class="font-headline-md text-headline-md text-primary mb-stack-md border-b border-outline-variant pb-1">Dernières Quêtes</h2>
+<ul class="space-y-stack-sm">
+<li class="flex justify-between items-center border-b border-dotted border-outline p-1">
+<span class="font-label-md">14 Juil.</span>
+<span class="font-bold text-primary">840 ₯</span>
+</li>
+<li class="flex justify-between items-center border-b border-dotted border-outline p-1 opacity-70">
+<span class="font-label-md">12 Juil.</span>
+<span class="font-bold">420 ₯</span>
+</li>
+<li class="flex justify-between items-center border-b border-dotted border-outline p-1 opacity-70">
+<span class="font-label-md">10 Juil.</span>
+<span class="font-bold">1,200 ₯</span>
+</li>
+</ul>
+</section>
+<section class="bg-surface-container-low p-stack-md rounded-xl iron-border parchment-texture hidden md:block">
+<div class="rivet-tl"></div><div class="rivet-tr"></div><div class="rivet-bl"></div><div class="rivet-br"></div>
+<h2 class="font-headline-md text-headline-md text-primary mb-stack-md border-b border-outline-variant pb-1">Bestiaire</h2>
+<img alt="Le Serpent" class="w-full rounded border border-outline shadow-inner mb-2" data-alt="Detailed medieval bestiary illustration of a forest green serpent with shining gold scales on an aged yellowed parchment background. The art style mimics hand-drawn ink and watercolor from a 15th-century manuscript. Subtle Latin calligraphy surrounds the mythical snake creature in a scholarly aesthetic. Warm candlelight illumination over the scene." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD4Tgr4DjIvCQSZW0QoxLjk4NMj3-VuzOqpSfadkFuz-9JL-lnkaS8ocMGtT9oI3QciXF9Rl8sAgmrztOre6LGtNqbFw6OpxsMUcAjISN6zoV_cx5yfVAGhEL7Uyugk8oqwwpEOhfBriF7-VGQ5n4dgSE4dbatiK3trmJQL5lHtzOrOcKjNhfMv8yPTnmTG98X5HB6sGC0DdfrOtaNxXDk7ef6ybFq39q581OAMOhuJB_vhW7gVfFBYDLS3Y-gPFm8rKf8XsrbM4Sld"/>
+<p class="font-label-md text-on-surface-variant italic">"Le Grand Serpent de l'Est, avide de couronnes et de gloire."</p>
+</section>
+</aside>
+<!-- Center: Game Board -->
+<div class="flex-grow flex flex-col items-center gap-stack-md">
+<!-- HUD -->
+<div class="w-full bg-surface-container-high p-4 rounded-xl iron-border parchment-texture flex justify-around items-center shadow-lg">
+<div class="rivet-tl"></div><div class="rivet-tr"></div><div class="rivet-bl"></div><div class="rivet-br"></div>
+<div class="text-center">
+<p class="font-label-md uppercase tracking-widest text-on-surface-variant">Deniers</p>
+<p class="font-headline-lg text-headline-lg text-primary" id="score">0</p>
+</div>
+<div class="w-px h-12 bg-outline-variant"></div>
+<div class="text-center">
+<p class="font-label-md uppercase tracking-widest text-on-surface-variant">Légende</p>
+<p class="font-headline-lg text-headline-lg text-secondary" id="high-score">100</p>
+</div>
+</div>
+<!-- Game Arena -->
+<div class="relative w-full aspect-square max-w-[600px] iron-border bg-surface-container shadow-2xl rounded-sm overflow-hidden" id="arena">
+<div class="rivet-tl"></div><div class="rivet-tr"></div><div class="rivet-bl"></div><div class="rivet-br"></div>
+<!-- Background Map Texture -->
+<div class="absolute inset-0 opacity-40 mix-blend-multiply" data-alt="Birdseye view of a highly detailed ancient stone dungeon floor grid. Large weathered granite slabs with cracks and moss growth between the cracks. The lighting is dim and atmospheric with warm torchlight flickering from the edges of the frame. Authentic medieval fantasy rpg map visuals." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDXuSd_a6x1qi_V8g3Y6wzsgJ89-DHAwYOwH7iogOGzmxyoEzNTHDntNSpy4XJRQi3OI6C-qr4Mm62WZct9a82FERy8sTgEYinQTWtJ4kM9ZdNc5pjDXrZwKDLocmAT5Vfh_h10NjFktJMtOUIfpMQjkjXfpGfoo30PwaahrTwk-S-R1rn-VmAEcCB2btJN7ybbh6J60aj-w-1MPE7LWbTU2NubxTpBAyHTfTbtozeSR5gy6W8vwe6rq7KQ_yWmmpPRi3mBdR-RpQsI')"></div>
+<!-- Game Elements Rendering Area -->
+<canvas class="relative z-10 w-full h-full" height="600" id="gameCanvas" width="600"></canvas>
+<!-- Start Overlay -->
+<div class="absolute inset-0 z-20 flex flex-col items-center justify-center bg-inverse-surface/60 backdrop-blur-sm" id="startScreen">
+<button class="wax-seal px-stack-lg py-stack-md rounded-full text-on-primary font-headline-md text-headline-md shadow-lg border-2 border-primary-container" onclick="startGame()">
+                        Commencer la Quête
+                    </button>
+<p class="mt-4 text-white font-body-md animate-pulse">Utilisez les flèches du clavier</p>
+</div>
+</div>
+</div>
+<!-- Right Sidebar: Prochain Butin -->
+<aside class="w-full md:w-64 flex flex-col gap-stack-lg">
+<section class="bg-surface-container-low p-stack-md rounded-xl iron-border parchment-texture">
+<div class="rivet-tl"></div><div class="rivet-tr"></div><div class="rivet-bl"></div><div class="rivet-br"></div>
+<h2 class="font-headline-md text-headline-md text-primary mb-stack-md border-b border-outline-variant pb-1">Prochain Butin</h2>
+<div class="space-y-stack-md">
+<div class="flex items-center gap-3 p-2 bg-surface-container rounded-lg border border-outline-variant">
+<div class="w-12 h-12 flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-4xl" style="font-variation-settings: 'FILL' 1;">military_tech</span>
+</div>
+<div>
+<p class="font-label-md font-bold">Couronne Royale</p>
+<p class="text-[12px] text-on-surface-variant">Multiplicateur x5</p>
+</div>
+</div>
+<div class="flex items-center gap-3 p-2 opacity-60">
+<div class="w-12 h-12 flex items-center justify-center">
+<span class="material-symbols-outlined text-4xl">wine_bar</span>
+</div>
+<div>
+<p class="font-label-md font-bold">Calice d'Argent</p>
+<p class="text-[12px]">Multiplicateur x2</p>
+</div>
+</div>
+</div>
+</section>
+<section class="mt-auto hidden md:block">
+<div class="bg-surface-container-highest p-4 rounded-xl iron-border shadow-inner text-center">
+<div class="rivet-tl"></div><div class="rivet-tr"></div><div class="rivet-bl"></div><div class="rivet-br"></div>
+<p class="font-label-md italic">"Fortune sourit aux audacieux."</p>
+</div>
+</section>
+</aside>
+</main>
+<!-- Bottom Nav Anchor (Shared Component) - Mobile Only -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-4 pt-2 bg-surface-container-low dark:bg-surface-dim border-t-2 border-outline dark:border-outline-variant shadow-lg rounded-t-xl">
+<a class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full p-2 w-12 h-12 shadow-inner" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">videogame_asset</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant p-2 hover:text-primary transition-all" href="#">
+<span class="material-symbols-outlined">military_tech</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant p-2 hover:text-primary transition-all" href="#">
+<span class="material-symbols-outlined">auto_stories</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant p-2 hover:text-primary transition-all" href="#">
+<span class="material-symbols-outlined">history_edu</span>
+</a>
+</nav>
+<script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreEl = document.getElementById('score');
+        const startScreen = document.getElementById('startScreen');
+        
+        const gridSize = 20;
+        const tileCount = canvas.width / gridSize;
+        
+        let score = 0;
+        let snake = [{x: 10, y: 10}];
+        let food = {x: 15, y: 15};
+        let dx = 0;
+        let dy = 0;
+        let gameActive = false;
+        let speed = 100;
+
+        function drawSnake() {
+            snake.forEach((part, index) => {
+                const isHead = index === 0;
+                ctx.fillStyle = isHead ? '#003503' : '#4d7c0f'; // Dark green head, forest green body
+                
+                // Draw Diamond Scales
+                ctx.save();
+                ctx.translate((part.x * gridSize) + gridSize/2, (part.y * gridSize) + gridSize/2);
+                ctx.rotate(Math.PI / 4);
+                
+                // Shadow
+                ctx.fillStyle = 'rgba(0,0,0,0.3)';
+                ctx.fillRect(-gridSize/2 + 2, -gridSize/2 + 2, gridSize - 4, gridSize - 4);
+                
+                // Scale body
+                ctx.fillStyle = isHead ? '#003503' : '#4d7c0f';
+                ctx.fillRect(-gridSize/2 + 2, -gridSize/2 + 2, gridSize - 4, gridSize - 4);
+                
+                // Gold trim for head
+                if(isHead) {
+                    ctx.strokeStyle = '#e9c349';
+                    ctx.lineWidth = 2;
+                    ctx.strokeRect(-gridSize/2 + 2, -gridSize/2 + 2, gridSize - 4, gridSize - 4);
+                    // Eyes
+                    ctx.fillStyle = '#ff907f';
+                    ctx.beginPath();
+                    ctx.arc(-2, -2, 2, 0, Math.PI * 2);
+                    ctx.arc(2, -2, 2, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                
+                ctx.restore();
+            });
+        }
+
+        function drawFood() {
+            // Crown Symbol
+            ctx.fillStyle = '#e9c349';
+            ctx.shadowColor = '#735c00';
+            ctx.shadowBlur = 10;
+            
+            const x = food.x * gridSize + 2;
+            const y = food.y * gridSize + 2;
+            const size = gridSize - 4;
+
+            ctx.beginPath();
+            ctx.moveTo(x, y + size);
+            ctx.lineTo(x + size, y + size);
+            ctx.lineTo(x + size, y + size/2);
+            ctx.lineTo(x + size*0.8, y + size/4);
+            ctx.lineTo(x + size*0.6, y + size/2);
+            ctx.lineTo(x + size*0.5, y + size/8);
+            ctx.lineTo(x + size*0.4, y + size/2);
+            ctx.lineTo(x + size*0.2, y + size/4);
+            ctx.lineTo(x, y + size/2);
+            ctx.closePath();
+            ctx.fill();
+            
+            ctx.shadowBlur = 0;
+        }
+
+        function advanceSnake() {
+            const head = {x: snake[0].x + dx, y: snake[0].y + dy};
+            snake.unshift(head);
+            
+            if (head.x === food.x && head.y === food.y) {
+                score += 10;
+                scoreEl.textContent = score;
+                createFood();
+                // "Crack" interaction effect (visual shake)
+                canvas.classList.add('translate-y-1');
+                setTimeout(() => canvas.classList.remove('translate-y-1'), 100);
+            } else {
+                snake.pop();
+            }
+        }
+
+        function createFood() {
+            food.x = Math.floor(Math.random() * tileCount);
+            food.y = Math.floor(Math.random() * tileCount);
+        }
+
+        function checkGameOver() {
+            const head = snake[0];
+            const hitWall = head.x < 0 || head.x >= tileCount || head.y < 0 || head.y >= tileCount;
+            const hitSelf = snake.slice(1).some(part => part.x === head.x && part.y === head.y);
+            
+            if (hitWall || hitSelf) {
+                gameActive = false;
+                startScreen.classList.remove('hidden');
+                document.getElementById('startScreen').querySelector('button').textContent = "Quête Échouée - Réessayer";
+            }
+        }
+
+        function clearCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        function gameLoop() {
+            if (!gameActive) return;
+            
+            setTimeout(() => {
+                clearCanvas();
+                drawFood();
+                advanceSnake();
+                drawSnake();
+                checkGameOver();
+                gameLoop();
+            }, speed);
+        }
+
+        function startGame() {
+            score = 0;
+            scoreEl.textContent = "0";
+            snake = [{x: 10, y: 10}];
+            dx = 1;
+            dy = 0;
+            gameActive = true;
+            startScreen.classList.add('hidden');
+            createFood();
+            gameLoop();
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if (!gameActive) return;
+            const LEFT_KEY = 37;
+            const RIGHT_KEY = 39;
+            const UP_KEY = 38;
+            const DOWN_KEY = 40;
+
+            const keyPressed = e.keyCode;
+            const goingUp = dy === -1;
+            const goingDown = dy === 1;
+            const goingRight = dx === 1;
+            const goingLeft = dx === -1;
+
+            if (keyPressed === LEFT_KEY && !goingRight) { dx = -1; dy = 0; }
+            if (keyPressed === UP_KEY && !goingDown) { dx = 0; dy = -1; }
+            if (keyPressed === RIGHT_KEY && !goingLeft) { dx = 1; dy = 0; }
+            if (keyPressed === DOWN_KEY && !goingUp) { dx = 0; dy = 1; }
+        });
+
+    </script>
+</body></html>
