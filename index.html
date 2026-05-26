@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html class="light" lang="fr">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Serpent's Quest - Medieval Snake</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:wght@400;600;700&family=EB+Garamond:ital,wght@0,400..800;1,400..800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+tailwind.config = {
+  darkMode: "class",
+  theme: {
+    extend: {
+      colors: {
+        "surface-container-highest": "#f1e1b9",
+        "primary-container": "#8b0000",
+        "surface-container-low": "#fff3d7",
+        "on-background": "#221b03",
+        "secondary-fixed-dim": "#e9c349",
+        "on-error-container": "#93000a",
+        "outline-variant": "#e3beb8",
+        "on-primary-container": "#ff907f",
+        "on-error": "#ffffff",
+        "secondary-fixed": "#ffe088",
+        "inverse-on-surface": "#fff0ca",
+        "on-tertiary-fixed": "#002201",
+        "primary-fixed-dim": "#ffb4a8",
+        "on-secondary-fixed-variant": "#574500",
+        "on-secondary-fixed": "#241a00",
+        "on-tertiary-container": "#5fc454",
+        "surface-bright": "#fff8f0",
+        "inverse-surface": "#383014",
+        "surface": "#fff8f0",
+        "on-surface-variant": "#5a403c",
+        "tertiary-fixed-dim": "#77dd6a",
+        "on-secondary-container": "#745c00",
+        "on-primary": "#ffffff",
+        "surface-container": "#fdedc4",
+        "tertiary-container": "#004e06",
+        "primary-fixed": "#ffdad4",
+        "surface-container-high": "#f7e7bf",
+        "surface-tint": "#b52619",
+        "on-primary-fixed": "#410000",
+        "primary": "#610000",
+        "on-tertiary-fixed-variant": "#005307",
+        "error": "#ba1a1a",
+        "surface-dim": "#e9d9b1",
+        "surface-variant": "#f1e1b9",
+        "secondary-container": "#fed65b",
+        "surface-container-lowest": "#ffffff",
+        "secondary": "#735c00",
+        "on-secondary": "#ffffff",
+        "on-primary-fixed-variant": "#920703",
+        "error-container": "#ffdad6",
+        "tertiary-fixed": "#92fa83",
+        "background": "#fff8f0",
+        "inverse-primary": "#ffb4a8",
+        "on-surface": "#221b03",
+        "outline": "#8e706b",
+        "tertiary": "#003503"
+      },
+      borderRadius: {
+        DEFAULT: "0.25rem",
+        lg: "0.5rem",
+        xl: "0.75rem",
+        full: "9999px"
+      },
+      spacing: {
+        "stack-sm": "0.5rem",
+        gutter: "1.5rem",
+        "stack-md": "1rem",
+        "stack-lg": "2rem",
+        "margin-page": "2rem"
+      },
+      fontFamily: {
+        "headline-xl": ["Libre Caslon Text"],
+        "headline-lg-mobile": ["Libre Caslon Text"],
+        "body-md": ["EB Garamond"],
+        "body-lg": ["EB Garamond"],
+        "headline-md": ["Libre Caslon Text"],
+        "label-md": ["EB Garamond"],
+        "headline-lg": ["Libre Caslon Text"]
+      },
+      fontSize: {
+        "headline-xl": ["48px", {lineHeight:"56px", letterSpacing:"-0.02em", fontWeight:"700"}],
+        "headline-lg-mobile": ["28px", {lineHeight:"36px", fontWeight:"700"}],
+        "body-md": ["16px", {lineHeight:"24px", fontWeight:"400"}],
+        "body-lg": ["20px", {lineHeight:"28px", fontWeight:"400"}],
+        "headline-md": ["24px", {lineHeight:"32px", fontWeight:"600"}],
+        "label-md": ["14px", {lineHeight:"20px", letterSpacing:"0.1em", fontWeight:"600"}],
+        "headline-lg": ["32px", {lineHeight:"40px", fontWeight:"700"}]
+      }
+    }
+  }
+}
+</script>
+<style>
+.material-symbols-outlined {
+  font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24
+}
+.parchment-texture {
+  background-color: #f1e1b9;
+}
+.stone-texture {
+  background-color: #383014;
+}
+.wax-seal {
+  background: radial-gradient(circle at 30% 30%, #b52619, #610000);
+  box-shadow: 2px 2px 5px rgba(0,0,0,0.4), inset -2px -2px 4px rgba(0,0,0,0.3);
+  transition: transform 0.1s ease-in-out
+}
+.wax-seal:active { transform: scale(0.92) }
+.iron-border {
+  border: 2px solid #5a403c;
+  position: relative
+}
+.iron-border::before, .iron-border::after,
+.iron-border .corner::before, .iron-border .corner::after {
+  content: "";
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: #221b03;
+  border-radius: 50%;
+  box-shadow: inset 1px 1px 2px #5a403c
+}
+.rivet-tl { top: -4px; left: -4px }
+.rivet-tr { top: -4px; right: -4px }
+.rivet-bl { bottom: -4px; left: -4px }
+.rivet-br { bottom: -4px; right: -4px }
+#gameCanvas { image-rendering: pixelated }
+</style>
+</head>
+<body class="bg-inverse-surface text-on-surface font-body-md text-body-md min-h-screen flex flex-col overflow-hidden">
+
+<!-- Header -->
+<header class="bg-surface-dim border-b-2 border-outline shadow-sm z-50">
+  <div class="flex justify-between items-center w-full px-gutter h-16 max-w-7xl mx-auto">
+    <div class="font-headline-md text-headline-md font-bold text-primary">Serpent's Quest</div>
+    <div class="hidden md:flex items-center gap-8">
+      <a class="text-primary-container font-bold underline font-label-md text-label-md hover:bg-surface-container-highest transition-colors px-3 py-1 rounded" href="#">Jouer</a>
+      <a class="text-on-surface-variant font-label-md text-label-md hover:bg-surface-container-highest transition-colors px-3 py-1 rounded" href="#">Palmarès</a>
+      <a class="text-on-surface-variant font-label-md text-label-md hover:bg-surface-container-highest transition-colors px-3 py-1 rounded" href="#">Artefacts</a>
+      <a class="text-on-surface-variant font-label-md text-label-md hover:bg-surface-container-highest transition-colors px-3 py-1 rounded" href="#">Lore</a>
+    </div>
+    <div class="flex items-center gap-4">
+      <button id="pauseBtn" class="flex items-center justify-center wax-seal rounded-full w-10 h-10 text-on-primary" onclick="togglePause()">
+        <span class="material-symbols-outlined" id="pauseIcon">pause</span>
+      </button>
+      <button class="flex items-center justify-center wax-seal rounded-full w-10 h-10 text-on-primary" onclick="restartGame()">
+        <span class="material-symbols-outlined">refresh</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main class="flex-grow flex flex-col md:flex-row p-gutter gap-gutter max-w-7xl mx-auto w-full overflow-y-auto">
+
+  <!-- Left Sidebar -->
+  <aside class="w-full md:w-64 flex flex-col gap-stack-lg">
+    <section class="bg-surface-container-low p-stack-md rounded-xl iron-border parchment-texture">
+      <div class="rivet-tl"></div><div class="rivet-tr"></div><div class="rivet-bl"></div><div class="rivet-br"></div>
+      <h2 class="font-headline-md text-headline-md text-primary mb-stack-md border-b border-outline-variant pb-1">Dernières Quêtes</h2>
+      <ul class="space-y-stack-sm" id="scoreHistory">
+        <li class="text-on-surface-variant text-sm italic text-center py-2">Aucune quête accomplie…</li>
+      </ul>
+    </section>
+    <section class="bg-surface-container-low p-stack-md rounded-xl iron-border parchment-texture hidden md:block">
+      <div class="rivet-tl"></div><div class="rivet-tr"></div><div class="rivet-bl"></div><div class="rivet-br"></div>
+      <h2 class="font-headline-md text-headline-md text-primary mb-stack-md border-b border-outline-variant pb-1">Bestiaire</h2>
+      <p class="font-label-md text-on-surface-variant italic text-center py-4">"Le Grand Serpent de l'Est, avide de couronnes et de gloire."</p>
+    </section>
+  </aside>
+
+  <!-- Center: Game Board -->
+  <div class="flex-grow flex flex-col items-center gap-stack-md">
+    <!-- HUD -->
+    <div class="w-full bg-surface-container-high p-4 rounded-xl iron-border parchment-texture flex justify-around items-center shadow-lg">
+      <div class="rivet-tl"></div><div class="rivet-tr"></div><div class="rivet-bl"></div><div class="rivet-br"></div>
+      <div class="text-center">
+        <p class="font-label-md uppercase tracking-widest text-on-surface-variant">Deniers</p>
+        <p class="font-headline-lg text-headline-lg text-primary" id="score">0</p>
+      </div>
+      <div class="w-px h-12 bg-outline-variant"></div>
+      <div class="text-center">
+        <p class="font-label-md uppercase tracking-widest text-on-surface-variant">Légende</p>
+        <p class="font-headline-lg text-headline-lg text-secondary" id="highScore">0</p>
+      </div>
+      <div class="w-px h-12 bg-outline-variant hidden sm:block"></div>
+      <div class="text-center hidden sm:block">
+        <p class="font-label-md uppercase tracking-widest text-on-surface-variant">Segments</p>
+        <p class="font-headline-lg text-headline-lg text-tertiary" id="length">1</p>
+      </div>
+    </div>
+
+    <!-- Game Arena -->
+    <div class="relative w-full aspect-square max-w-[600px] iron-border bg-surface-container shadow-2xl rounded-sm overflow-hidden" id="arena">
+      <div class="rivet-tl"></div><div class="rivet-tr"></div><div class="rivet-bl"></div><div class="rivet-br"></div>
+      <canvas class="w-full h-full" height="600" id="gameCanvas" width="600"></canvas>
+
+      <!-- Start Overlay -->
+      <div class="absolute inset-0 z-20 flex flex-col items-center justify-center bg-inverse-surface/70 backdrop-blur-sm" id="startScreen">
+        <h1 class="font-headline-lg text-headline-lg text-inverse-on-surface mb-4">Serpent's Quest</h1>
+        <button class="wax-seal px-stack-lg py-stack-md rounded-full text-on-primary font-headline-md text-headline-md shadow-lg border-2 border-primary-container mb-4" onclick="startGame()">
+          Commencer la Quête
+        </button>
+        <div class="text-center text-white/80 font-body-md text-sm space-y-1">
+          <p>Flèches du clavier pour diriger</p>
+          <p>🍎 Pomme +1 pt &nbsp;|&nbsp; ⭐ Bonus +3 pts</p>
+          <p>Évitez les murs et vous-même !</p>
+        </div>
+      </div>
+
+      <!-- Game Over Overlay -->
+      <div class="absolute inset-0 z-20 flex flex-col items-center justify-center bg-inverse-surface/70 backdrop-blur-sm hidden" id="gameOverScreen">
+        <h1 class="font-headline-lg text-headline-lg text-error mb-2">Quête Échouée</h1>
+        <p class="text-white font-body-md mb-1">Score : <span class="font-bold" id="finalScore">0</span> Deniers</p>
+        <p class="text-white/70 font-body-md text-sm mb-6">Légende : <span id="finalHigh">0</span> Deniers</p>
+        <button class="wax-seal px-stack-lg py-stack-md rounded-full text-on-primary font-headline-md text-headline-md shadow-lg border-2 border-primary-container" onclick="startGame()">
+          Réessayer
+        </button>
+      </div>
+
+      <!-- Pause Overlay -->
+      <div class="absolute inset-0 z-20 flex flex-col items-center justify-center bg-inverse-surface/60 backdrop-blur-sm hidden" id="pauseScreen">
+        <h1 class="font-headline-lg text-headline-lg text-inverse-on-surface mb-4">En Pause</h1>
+        <button class="wax-seal px-stack-lg py-stack-md rounded-full text-on-primary font-headline-md text-headline-md shadow-lg border-2 border-primary-container" onclick="togglePause()">
+          Reprendre
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile controls hint -->
+    <p class="text-white/60 text-xs font-body-md md:hidden">Utilisez les flèches du clavier</p>
+  </div>
+
+  <!-- Right Sidebar -->
+  <aside class="w-full md:w-64 flex flex-col gap-stack-lg">
+    <section class="bg-surface-container-low p-stack-md rounded-xl iron-border parchment-texture">
+      <div class="rivet-tl"></div><div class="rivet-tr"></div><div class="rivet-bl"></div><div class="rivet-br"></div>
+      <h2 class="font-headline-md text-headline-md text-primary mb-stack-md border-b border-outline-variant pb-1">Prochain Butin</h2>
+      <div class="space-y-stack-md">
+        <div class="flex items-center gap-3 p-2 bg-surface-container rounded-lg border border-outline-variant" id="nextFoodDisplay">
+          <div class="w-12 h-12 flex items-center justify-center text-secondary">
+            <span class="material-symbols-outlined text-4xl" style="font-variation-settings:'FILL' 1;">military_tech</span>
+          </div>
+          <div>
+            <p class="font-label-md font-bold">Couronne Royale</p>
+            <p class="text-[12px] text-on-surface-variant">+1 Denier, +1 segment</p>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="mt-auto hidden md:block">
+      <div class="bg-surface-container-highest p-4 rounded-xl iron-border shadow-inner text-center">
+        <div class="rivet-tl"></div><div class="rivet-tr"></div><div class="rivet-bl"></div><div class="rivet-br"></div>
+        <p class="font-label-md italic">"Fortune sourit aux audacieux."</p>
+      </div>
+    </section>
+    <section class="bg-surface-container-low p-stack-md rounded-xl iron-border parchment-texture hidden md:block">
+      <div class="rivet-tl"></div><div class="rivet-tr"></div><div class="rivet-bl"></div><div class="rivet-br"></div>
+      <h2 class="font-headline-md text-headline-md text-primary mb-2 border-b border-outline-variant pb-1">Légende</h2>
+      <div class="space-y-1 text-sm font-body-md">
+        <div class="flex items-center gap-2"><span class="inline-block w-4 h-4 rounded" style="background:#003503"></span><span>Tête du serpent</span></div>
+        <div class="flex items-center gap-2"><span class="inline-block w-4 h-4 rounded" style="background:#4d7c0f"></span><span>Corps du serpent</span></div>
+        <div class="flex items-center gap-2"><span class="inline-block w-4 h-4 rounded" style="background:#383014"></span><span>Mur</span></div>
+        <div class="flex items-center gap-2"><span class="inline-block w-4 h-4 rounded" style="background:#e9c349"></span><span>Pomme 🍎 (+1 pt)</span></div>
+        <div class="flex items-center gap-2"><span class="inline-block w-4 h-4 rounded" style="background:#f97316"></span><span>Bonus ⭐ (+3 pts)</span></div>
+      </div>
+    </section>
+  </aside>
+</main>
+
+<!-- Bottom Nav - Mobile -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-4 pt-2 bg-surface-container-low border-t-2 border-outline shadow-lg rounded-t-xl">
+  <a class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full p-2 w-12 h-12 shadow-inner" href="#">
+    <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1;">videogame_asset</span>
+  </a>
+  <a class="flex flex-col items-center justify-center text-on-surface-variant p-2 hover:text-primary transition-all" href="#">
+    <span class="material-symbols-outlined">military_tech</span>
+  </a>
+  <a class="flex flex-col items-center justify-center text-on-surface-variant p-2 hover:text-primary transition-all" href="#">
+    <span class="material-symbols-outlined">auto_stories</span>
+  </a>
+  <a class="flex flex-col items-center justify-center text-on-surface-variant p-2 hover:text-primary transition-all" href="#">
+    <span class="material-symbols-outlined">history_edu</span>
+  </a>
+</nav>
+
+<script>
+// ─── Map (extrait du fichier snake_map_vibe_coding.xlsx) ───
+// 0=vide  1=mur  2=pomme  3=bonus
+const MAP = [
+  [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+  [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+  [1,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,1],
+  [1,0,1,0,0,0,0,2,0,0,0,0,2,0,0,0,0,1,0,1],
+  [1,0,0,0,0,1,0,0,0,0,0,0,0,0,1,0,0,0,0,1],
+  [1,0,0,0,0,1,0,0,0,0,0,0,0,0,1,0,0,0,0,1],
+  [1,0,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,1],
+  [1,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,1],
+  [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+  [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+  [1,0,0,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,1],
+  [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+  [1,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,1],
+  [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+  [1,0,0,0,0,1,0,0,0,0,0,0,0,0,1,0,0,0,0,1],
+  [1,0,0,0,0,1,0,0,0,0,0,0,0,0,1,0,0,0,0,1],
+  [1,0,1,0,0,0,0,2,0,0,0,0,2,0,0,0,0,1,0,1],
+  [1,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,1],
+  [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+  [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+];
+
+// ─── Constants ───
+const GRID = 20;
+const TILE = 30; // px per cell
+const SPEED = 150; // ms per tick
+
+// ─── DOM refs ───
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+const scoreEl = document.getElementById('score');
+const highScoreEl = document.getElementById('highScore');
+const lengthEl = document.getElementById('length');
+const startScreen = document.getElementById('startScreen');
+const gameOverScreen = document.getElementById('gameOverScreen');
+const pauseScreen = document.getElementById('pauseScreen');
+const finalScoreEl = document.getElementById('finalScore');
+const finalHighEl = document.getElementById('finalHigh');
+const scoreHistoryEl = document.getElementById('scoreHistory');
+const nextFoodDisplay = document.getElementById('nextFoodDisplay');
+const pauseIcon = document.getElementById('pauseIcon');
+
+// ─── Game state ───
+let snake, dx, dy, food, bonus, score, gameActive, paused, loopId;
+let highScore = parseInt(localStorage.getItem('snakeHigh') || '0');
+let scoreHistory = JSON.parse(localStorage.getItem('snakeHistory') || '[]');
+
+highScoreEl.textContent = highScore;
+renderHistory();
+
+// ─── Collect free cells from map ───
+function freeCells() {
+  const cells = [];
+  for (let r = 0; r < GRID; r++)
+    for (let c = 0; c < GRID; c++)
+      if (MAP[r][c] === 0) cells.push({x: c, y: r});
+  return cells;
+}
+
+function randomFreeCell(excludes) {
+  const free = freeCells().filter(cell =>
+    !excludes.some(e => e.x === cell.x && e.y === cell.y)
+  );
+  return free[Math.floor(Math.random() * free.length)];
+}
+
+// ─── Spawn food / bonus on a free cell ───
+function spawnFood() {
+  food = randomFreeCell([...snake, ...(bonus ? [bonus] : [])]);
+}
+function spawnBonus() {
+  bonus = randomFreeCell([...snake, food]);
+}
+
+// ─── Drawing ───
+function drawBackground() {
+  ctx.fillStyle = '#f4e4bc';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+}
+
+function drawMap() {
+  for (let r = 0; r < GRID; r++) {
+    for (let c = 0; c < GRID; c++) {
+      if (MAP[r][c] === 1) {
+        const x = c * TILE, y = r * TILE;
+        // Wall base
+        ctx.fillStyle = '#2a2008';
+        ctx.fillRect(x, y, TILE, TILE);
+        // Highlight edge (bevel)
+        ctx.fillStyle = '#4a3820';
+        ctx.fillRect(x + 1, y + 1, TILE - 2, TILE - 2);
+        // Inner shadow
+        ctx.fillStyle = '#1a1205';
+        ctx.fillRect(x + 2, y + 2, TILE - 4, TILE - 4);
+        // Stone pattern dots
+        ctx.fillStyle = 'rgba(255,255,255,0.06)';
+        ctx.fillRect(x + 4, y + 4, 4, 4);
+        ctx.fillRect(x + 14, y + 14, 4, 4);
+      }
+    }
+  }
+}
+
+function drawFood() {
+  if (!food) return;
+  const x = food.x * TILE + 2;
+  const y = food.y * TILE + 2;
+  const s = TILE - 4;
+
+  ctx.fillStyle = '#e9c349';
+  ctx.shadowColor = '#735c00';
+  ctx.shadowBlur = 8;
+
+  // Crown shape
+  ctx.beginPath();
+  ctx.moveTo(x, y + s);
+  ctx.lineTo(x + s, y + s);
+  ctx.lineTo(x + s, y + s * 0.5);
+  ctx.lineTo(x + s * 0.8, y + s * 0.25);
+  ctx.lineTo(x + s * 0.6, y + s * 0.5);
+  ctx.lineTo(x + s * 0.5, y + s * 0.1);
+  ctx.lineTo(x + s * 0.4, y + s * 0.5);
+  ctx.lineTo(x + s * 0.2, y + s * 0.25);
+  ctx.lineTo(x, y + s * 0.5);
+  ctx.closePath();
+  ctx.fill();
+  ctx.shadowBlur = 0;
+}
+
+function drawBonus() {
+  if (!bonus) return;
+  const cx = bonus.x * TILE + TILE / 2;
+  const cy = bonus.y * TILE + TILE / 2;
+  const r = TILE / 2 - 3;
+  const spikes = 5;
+
+  ctx.fillStyle = '#f97316';
+  ctx.shadowColor = '#ea580c';
+  ctx.shadowBlur = 10;
+
+  ctx.beginPath();
+  for (let i = 0; i < spikes * 2; i++) {
+    const angle = (i * Math.PI) / spikes - Math.PI / 2;
+    const dist = i % 2 === 0 ? r : r * 0.45;
+    const px = cx + Math.cos(angle) * dist;
+    const py = cy + Math.sin(angle) * dist;
+    i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+  }
+  ctx.closePath();
+  ctx.fill();
+  ctx.shadowBlur = 0;
+}
+
+function drawSnake() {
+  snake.forEach((part, idx) => {
+    const isHead = idx === 0;
+    const x = part.x * TILE + TILE / 2;
+    const y = part.y * TILE + TILE / 2;
+
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(Math.PI / 4);
+
+    // Shadow
+    ctx.fillStyle = 'rgba(0,0,0,0.25)';
+    ctx.fillRect(-TILE / 2 + 3, -TILE / 2 + 3, TILE - 4, TILE - 4);
+
+    // Body
+    ctx.fillStyle = isHead ? '#003503' : '#4d7c0f';
+    ctx.fillRect(-TILE / 2 + 2, -TILE / 2 + 2, TILE - 4, TILE - 4);
+
+    if (isHead) {
+      // Gold border
+      ctx.strokeStyle = '#e9c349';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(-TILE / 2 + 2, -TILE / 2 + 2, TILE - 4, TILE - 4);
+      // Eyes
+      ctx.fillStyle = '#ff907f';
+      ctx.beginPath();
+      ctx.arc(-3, -3, 2.5, 0, Math.PI * 2);
+      ctx.arc(3, -3, 2.5, 0, Math.PI * 2);
+      ctx.fill();
+    } else {
+      // Scale highlight
+      ctx.fillStyle = 'rgba(255,255,255,0.12)';
+      ctx.fillRect(-TILE / 2 + 4, -TILE / 2 + 4, TILE / 2 - 4, 2);
+    }
+
+    ctx.restore();
+  });
+}
+
+function render() {
+  drawBackground();
+  drawMap();
+  drawFood();
+  drawBonus();
+  drawSnake();
+}
+
+// ─── Game logic ───
+function advance() {
+  const head = {x: snake[0].x + dx, y: snake[0].y + dy};
+
+  // Wall collision
+  if (
+    head.x < 0 || head.x >= GRID ||
+    head.y < 0 || head.y >= GRID ||
+    MAP[head.y][head.x] === 1
+  ) { endGame(); return; }
+
+  // Self collision
+  if (snake.some(p => p.x === head.x && p.y === head.y)) { endGame(); return; }
+
+  snake.unshift(head);
+
+  // Food check
+  if (food && head.x === food.x && head.y === food.y) {
+    score += 1;
+    spawnFood();
+    // Keep tail (gained 1 segment naturally)
+  } else if (bonus && head.x === bonus.x && head.y === bonus.y) {
+    score += 3;
+    // Add 2 extra segments by not popping twice
+    snake.push({...snake[snake.length - 1]});
+    snake.push({...snake[snake.length - 1]});
+    spawnBonus();
+  } else {
+    snake.pop();
+  }
+
+  scoreEl.textContent = score;
+  lengthEl.textContent = snake.length;
+  updateNextFoodUI();
+}
+
+function gameLoop() {
+  if (!gameActive || paused) return;
+  advance();
+  if (gameActive) loopId = setTimeout(gameLoop, SPEED);
+}
+
+function startGame() {
+  score = 0;
+  dx = 1; dy = 0;
+  snake = [{x: 10, y: 10}];
+  gameActive = true;
+  paused = false;
+
+  spawnFood();
+  spawnBonus();
+
+  scoreEl.textContent = '0';
+  lengthEl.textContent = '1';
+  pauseIcon.textContent = 'pause';
+
+  startScreen.classList.add('hidden');
+  gameOverScreen.classList.add('hidden');
+  pauseScreen.classList.add('hidden');
+
+  clearTimeout(loopId);
+  render();
+  loopId = setTimeout(gameLoop, SPEED);
+}
+
+function endGame() {
+  gameActive = false;
+  clearTimeout(loopId);
+
+  if (score > highScore) {
+    highScore = score;
+    localStorage.setItem('snakeHigh', highScore);
+    highScoreEl.textContent = highScore;
+  }
+
+  // Save history (max 5)
+  const now = new Date();
+  const label = now.toLocaleDateString('fr-FR', {day:'numeric', month:'short'});
+  scoreHistory.unshift({label, score});
+  if (scoreHistory.length > 5) scoreHistory.pop();
+  localStorage.setItem('snakeHistory', JSON.stringify(scoreHistory));
+  renderHistory();
+
+  finalScoreEl.textContent = score;
+  finalHighEl.textContent = highScore;
+  gameOverScreen.classList.remove('hidden');
+
+  render();
+}
+
+function restartGame() {
+  if (!gameActive) { startGame(); return; }
+  endGame();
+  setTimeout(startGame, 100);
+}
+
+function togglePause() {
+  if (!gameActive) return;
+  paused = !paused;
+  pauseIcon.textContent = paused ? 'play_arrow' : 'pause';
+  if (paused) {
+    clearTimeout(loopId);
+    pauseScreen.classList.remove('hidden');
+  } else {
+    pauseScreen.classList.add('hidden');
+    loopId = setTimeout(gameLoop, SPEED);
+  }
+}
+
+// ─── UI helpers ───
+function renderHistory() {
+  if (scoreHistory.length === 0) {
+    scoreHistoryEl.innerHTML = '<li class="text-on-surface-variant text-sm italic text-center py-2">Aucune quête accomplie…</li>';
+    return;
+  }
+  scoreHistoryEl.innerHTML = scoreHistory.map((s, i) => `
+    <li class="flex justify-between items-center border-b border-dotted border-outline p-1 ${i > 0 ? 'opacity-70' : ''}">
+      <span class="font-label-md">${s.label}</span>
+      <span class="font-bold ${i === 0 ? 'text-primary' : ''}">${s.score} ₯</span>
+    </li>`).join('');
+}
+
+function updateNextFoodUI() {
+  if (!bonus) return;
+  // Show info about the bonus being active
+  nextFoodDisplay.innerHTML = `
+    <div class="w-12 h-12 flex items-center justify-center" style="color:#f97316">
+      <span class="material-symbols-outlined text-4xl" style="font-variation-settings:'FILL' 1;">star</span>
+    </div>
+    <div>
+      <p class="font-label-md font-bold">Étoile Bonus</p>
+      <p class="text-[12px] text-on-surface-variant">+3 Deniers, +2 segments</p>
+    </div>`;
+}
+
+// ─── Keyboard controls ───
+window.addEventListener('keydown', e => {
+  if (e.key === 'Enter') {
+    if (!gameActive) { startGame(); return; }
+  }
+  if (e.key === ' ') { e.preventDefault(); togglePause(); return; }
+  if (!gameActive || paused) return;
+
+  const goingLeft = dx === -1, goingRight = dx === 1;
+  const goingUp = dy === -1, goingDown = dy === 1;
+
+  if ((e.key === 'ArrowLeft'  || e.key === 'a') && !goingRight) { dx = -1; dy = 0; }
+  if ((e.key === 'ArrowRight' || e.key === 'd') && !goingLeft)  { dx = 1;  dy = 0; }
+  if ((e.key === 'ArrowUp'    || e.key === 'w') && !goingDown)  { dx = 0;  dy = -1; }
+  if ((e.key === 'ArrowDown'  || e.key === 's') && !goingUp)    { dx = 0;  dy = 1; }
+});
+
+// ─── Initial render ───
+(function init() {
+  // Draw the map without a snake so the player sees the arena before starting
+  ctx.fillStyle = '#f4e4bc';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  for (let r = 0; r < GRID; r++) {
+    for (let c = 0; c < GRID; c++) {
+      if (MAP[r][c] === 1) {
+        const x = c * TILE, y = r * TILE;
+        ctx.fillStyle = '#2a2008';
+        ctx.fillRect(x, y, TILE, TILE);
+        ctx.fillStyle = '#4a3820';
+        ctx.fillRect(x + 1, y + 1, TILE - 2, TILE - 2);
+        ctx.fillStyle = '#1a1205';
+        ctx.fillRect(x + 2, y + 2, TILE - 4, TILE - 4);
+      }
+    }
+  }
+})();
+</script>
+</body>
+</html>
