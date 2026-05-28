@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Serpent's Quest - Medieval Snake</title>
+<title>Serpent's Quest — Dragon's Ledger</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:wght@400;600;700&family=EB+Garamond:ital,wght@0,400..800;1,400..800&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
@@ -32,6 +32,7 @@ tailwind.config = {
         "surface-bright": "#fff8f0",
         "inverse-surface": "#383014",
         "surface": "#fff8f0",
+        "on-tertiary": "#ffffff",
         "on-surface-variant": "#5a403c",
         "tertiary-fixed-dim": "#77dd6a",
         "on-secondary-container": "#745c00",
@@ -54,25 +55,14 @@ tailwind.config = {
         "on-primary-fixed-variant": "#920703",
         "error-container": "#ffdad6",
         "tertiary-fixed": "#92fa83",
+        "tertiary": "#003503",
         "background": "#fff8f0",
-        "inverse-primary": "#ffb4a8",
         "on-surface": "#221b03",
         "outline": "#8e706b",
-        "tertiary": "#003503"
+        "inverse-primary": "#ffb4a8"
       },
-      borderRadius: {
-        DEFAULT: "0.25rem",
-        lg: "0.5rem",
-        xl: "0.75rem",
-        full: "9999px"
-      },
-      spacing: {
-        "stack-sm": "0.5rem",
-        gutter: "1.5rem",
-        "stack-md": "1rem",
-        "stack-lg": "2rem",
-        "margin-page": "2rem"
-      },
+      borderRadius: { DEFAULT: "0.25rem", lg: "0.5rem", xl: "0.75rem", full: "9999px" },
+      spacing: { "stack-sm": "0.5rem", gutter: "1.5rem", "stack-md": "1rem", "stack-lg": "2rem", "margin-page": "2rem" },
       fontFamily: {
         "headline-xl": ["Libre Caslon Text"],
         "headline-lg-mobile": ["Libre Caslon Text"],
@@ -83,214 +73,239 @@ tailwind.config = {
         "headline-lg": ["Libre Caslon Text"]
       },
       fontSize: {
-        "headline-xl": ["48px", {lineHeight:"56px", letterSpacing:"-0.02em", fontWeight:"700"}],
-        "headline-lg-mobile": ["28px", {lineHeight:"36px", fontWeight:"700"}],
-        "body-md": ["16px", {lineHeight:"24px", fontWeight:"400"}],
-        "body-lg": ["20px", {lineHeight:"28px", fontWeight:"400"}],
-        "headline-md": ["24px", {lineHeight:"32px", fontWeight:"600"}],
-        "label-md": ["14px", {lineHeight:"20px", letterSpacing:"0.1em", fontWeight:"600"}],
-        "headline-lg": ["32px", {lineHeight:"40px", fontWeight:"700"}]
+        "headline-xl":        ["48px", { lineHeight:"56px", letterSpacing:"-0.02em", fontWeight:"700" }],
+        "headline-lg-mobile": ["28px", { lineHeight:"36px", fontWeight:"700" }],
+        "body-md":            ["16px", { lineHeight:"24px", fontWeight:"400" }],
+        "body-lg":            ["20px", { lineHeight:"28px", fontWeight:"400" }],
+        "headline-md":        ["24px", { lineHeight:"32px", fontWeight:"600" }],
+        "label-md":           ["14px", { lineHeight:"20px", letterSpacing:"0.1em", fontWeight:"600" }],
+        "headline-lg":        ["32px", { lineHeight:"40px", fontWeight:"700" }]
       }
     }
   }
 }
 </script>
 <style>
-.material-symbols-outlined {
-  font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24
-}
-.parchment-texture {
-  background-color: #f1e1b9;
-}
-.stone-texture {
-  background-color: #383014;
-}
-.wax-seal {
-  background: radial-gradient(circle at 30% 30%, #b52619, #610000);
-  box-shadow: 2px 2px 5px rgba(0,0,0,0.4), inset -2px -2px 4px rgba(0,0,0,0.3);
-  transition: transform 0.1s ease-in-out
-}
-.wax-seal:active { transform: scale(0.92) }
-.iron-border {
-  border: 2px solid #5a403c;
-  position: relative
-}
-.iron-border::before, .iron-border::after,
-.iron-border .corner::before, .iron-border .corner::after {
-  content: "";
-  position: absolute;
-  width: 8px;
-  height: 8px;
-  background: #221b03;
-  border-radius: 50%;
-  box-shadow: inset 1px 1px 2px #5a403c
-}
-.rivet-tl { top: -4px; left: -4px }
-.rivet-tr { top: -4px; right: -4px }
-.rivet-bl { bottom: -4px; left: -4px }
-.rivet-br { bottom: -4px; right: -4px }
-#gameCanvas { image-rendering: pixelated }
+  .material-symbols-outlined { font-variation-settings:"FILL" 0,"wght" 400,"GRAD" 0,"opsz" 24 }
+  .parchment-texture { background-color:#f1e1b9 }
+  .iron-border { border:2px solid #5a403c; position:relative }
+  .rivet { position:absolute; width:8px; height:8px; background:#221b03; border-radius:50%; box-shadow:inset 1px 1px 2px #5a403c; z-index:1 }
+  .rivet-tl { top:-4px; left:-4px }
+  .rivet-tr { top:-4px; right:-4px }
+  .rivet-bl { bottom:-4px; left:-4px }
+  .rivet-br { bottom:-4px; right:-4px }
+  .wax-seal {
+    background: radial-gradient(circle at 30% 30%, #b52619, #610000);
+    box-shadow: 2px 2px 5px rgba(0,0,0,.4), inset -2px -2px 4px rgba(0,0,0,.3);
+    transition: transform .1s ease-in-out;
+  }
+  .wax-seal:active { transform:scale(.92) }
+  #gameCanvas { display:block; touch-action:none }
+  .progress-bar { height:8px; border-radius:4px; overflow:hidden; background:#e9d9b1 }
+  .progress-fill { height:100%; border-radius:4px; transition:width .4s ease }
 </style>
 </head>
-<body class="bg-inverse-surface text-on-surface font-body-md text-body-md min-h-screen flex flex-col overflow-hidden">
+<body class="bg-inverse-surface text-on-surface font-body-md text-body-md min-h-screen flex flex-col overflow-x-hidden">
 
 <!-- Header -->
 <header class="bg-surface-dim border-b-2 border-outline shadow-sm z-50">
   <div class="flex justify-between items-center w-full px-gutter h-16 max-w-7xl mx-auto">
-    <div class="font-headline-md text-headline-md font-bold text-primary">Serpent's Quest</div>
-    <div class="hidden md:flex items-center gap-8">
+    <div class="font-headline-md text-headline-md font-bold text-primary" style="font-family:'Libre Caslon Text',serif">Serpent's Quest</div>
+    <div class="hidden md:flex items-center gap-6">
       <a class="text-primary-container font-bold underline font-label-md text-label-md hover:bg-surface-container-highest transition-colors px-3 py-1 rounded" href="#">Jouer</a>
-      <a class="text-on-surface-variant font-label-md text-label-md hover:bg-surface-container-highest transition-colors px-3 py-1 rounded" href="#">Palmarès</a>
+      <a class="text-on-surface-variant font-label-md text-label-md hover:bg-surface-container-highest transition-colors px-3 py-1 rounded" href="#">Classement</a>
       <a class="text-on-surface-variant font-label-md text-label-md hover:bg-surface-container-highest transition-colors px-3 py-1 rounded" href="#">Artefacts</a>
       <a class="text-on-surface-variant font-label-md text-label-md hover:bg-surface-container-highest transition-colors px-3 py-1 rounded" href="#">Lore</a>
     </div>
-    <div class="flex items-center gap-4">
-      <button id="pauseBtn" class="flex items-center justify-center wax-seal rounded-full w-10 h-10 text-on-primary" onclick="togglePause()">
+    <div class="flex items-center gap-3">
+      <button id="pauseBtn" class="flex items-center justify-center wax-seal rounded-full w-10 h-10 text-on-primary" onclick="togglePause()" title="Pause (Espace)">
         <span class="material-symbols-outlined" id="pauseIcon">pause</span>
       </button>
-      <button class="flex items-center justify-center wax-seal rounded-full w-10 h-10 text-on-primary" onclick="restartGame()">
+      <button class="flex items-center justify-center wax-seal rounded-full w-10 h-10 text-on-primary" onclick="resetGame()" title="Réinitialiser">
         <span class="material-symbols-outlined">refresh</span>
       </button>
     </div>
   </div>
 </header>
 
-<main class="flex-grow flex flex-col md:flex-row p-gutter gap-gutter max-w-7xl mx-auto w-full overflow-y-auto">
+<!-- Main -->
+<main class="flex-grow flex flex-col md:flex-row p-gutter gap-gutter max-w-7xl mx-auto w-full pb-20 md:pb-gutter">
 
   <!-- Left Sidebar -->
-  <aside class="w-full md:w-64 flex flex-col gap-stack-lg">
+  <aside class="w-full md:w-60 flex flex-col gap-stack-lg shrink-0">
     <section class="bg-surface-container-low p-stack-md rounded-xl iron-border parchment-texture">
-      <div class="rivet-tl"></div><div class="rivet-tr"></div><div class="rivet-bl"></div><div class="rivet-br"></div>
-      <h2 class="font-headline-md text-headline-md text-primary mb-stack-md border-b border-outline-variant pb-1">Dernières Quêtes</h2>
-      <ul class="space-y-stack-sm" id="scoreHistory">
-        <li class="text-on-surface-variant text-sm italic text-center py-2">Aucune quête accomplie…</li>
+      <div class="rivet rivet-tl"></div><div class="rivet rivet-tr"></div>
+      <div class="rivet rivet-bl"></div><div class="rivet rivet-br"></div>
+      <h2 class="font-headline-md text-headline-md text-primary mb-stack-md border-b border-outline-variant pb-1" style="font-family:'Libre Caslon Text',serif">Dernières Quêtes</h2>
+      <ul class="space-y-1" id="lastQuests">
+        <li class="flex justify-between items-center border-b border-dotted border-outline py-1">
+          <span class="font-label-md text-on-surface-variant italic text-sm">Aucune quête</span>
+        </li>
       </ul>
     </section>
-    <section class="bg-surface-container-low p-stack-md rounded-xl iron-border parchment-texture hidden md:block">
-      <div class="rivet-tl"></div><div class="rivet-tr"></div><div class="rivet-bl"></div><div class="rivet-br"></div>
-      <h2 class="font-headline-md text-headline-md text-primary mb-stack-md border-b border-outline-variant pb-1">Bestiaire</h2>
-      <p class="font-label-md text-on-surface-variant italic text-center py-4">"Le Grand Serpent de l'Est, avide de couronnes et de gloire."</p>
+
+    <section class="bg-surface-container-low p-stack-md rounded-xl iron-border parchment-texture hidden md:flex flex-col">
+      <div class="rivet rivet-tl"></div><div class="rivet rivet-tr"></div>
+      <div class="rivet rivet-bl"></div><div class="rivet rivet-br"></div>
+      <h2 class="font-headline-md text-headline-md text-primary mb-stack-md border-b border-outline-variant pb-1" style="font-family:'Libre Caslon Text',serif">Bestiaire</h2>
+      <div class="rounded border border-outline bg-tertiary-container flex items-center justify-center overflow-hidden mb-2">
+        <canvas id="snakePreview" width="180" height="90"></canvas>
+      </div>
+      <p class="font-label-md text-on-surface-variant italic text-sm">"Le Grand Serpent de l'Est, avide de couronnes et de gloire."</p>
     </section>
   </aside>
 
-  <!-- Center: Game Board -->
-  <div class="flex-grow flex flex-col items-center gap-stack-md">
+  <!-- Center: HUD + Arena + Mobile Controls -->
+  <div class="flex-grow flex flex-col items-center gap-stack-md min-w-0">
+
     <!-- HUD -->
-    <div class="w-full bg-surface-container-high p-4 rounded-xl iron-border parchment-texture flex justify-around items-center shadow-lg">
-      <div class="rivet-tl"></div><div class="rivet-tr"></div><div class="rivet-bl"></div><div class="rivet-br"></div>
+    <div class="w-full bg-surface-container-high p-3 rounded-xl iron-border parchment-texture flex justify-around items-center shadow-lg">
+      <div class="rivet rivet-tl"></div><div class="rivet rivet-tr"></div>
+      <div class="rivet rivet-bl"></div><div class="rivet rivet-br"></div>
       <div class="text-center">
-        <p class="font-label-md uppercase tracking-widest text-on-surface-variant">Deniers</p>
-        <p class="font-headline-lg text-headline-lg text-primary" id="score">0</p>
+        <p class="font-label-md uppercase tracking-widest text-on-surface-variant text-xs">Deniers</p>
+        <p class="font-headline-lg text-headline-lg text-primary" id="scoreEl" style="font-family:'Libre Caslon Text',serif">0</p>
       </div>
-      <div class="w-px h-12 bg-outline-variant"></div>
+      <div class="w-px h-10 bg-outline-variant"></div>
       <div class="text-center">
-        <p class="font-label-md uppercase tracking-widest text-on-surface-variant">Légende</p>
-        <p class="font-headline-lg text-headline-lg text-secondary" id="highScore">0</p>
+        <p class="font-label-md uppercase tracking-widest text-on-surface-variant text-xs">Record</p>
+        <p class="font-headline-lg text-headline-lg text-secondary" id="highScoreEl" style="font-family:'Libre Caslon Text',serif">0</p>
       </div>
-      <div class="w-px h-12 bg-outline-variant hidden sm:block"></div>
-      <div class="text-center hidden sm:block">
-        <p class="font-label-md uppercase tracking-widest text-on-surface-variant">Segments</p>
-        <p class="font-headline-lg text-headline-lg text-tertiary" id="length">1</p>
+      <div class="w-px h-10 bg-outline-variant"></div>
+      <div class="text-center">
+        <p class="font-label-md uppercase tracking-widest text-on-surface-variant text-xs">Allure</p>
+        <p class="font-headline-md text-headline-md" id="speedEl">⚡ Vif</p>
       </div>
     </div>
 
-    <!-- Game Arena -->
-    <div class="relative w-full aspect-square max-w-[600px] iron-border bg-surface-container shadow-2xl rounded-sm overflow-hidden" id="arena">
-      <div class="rivet-tl"></div><div class="rivet-tr"></div><div class="rivet-bl"></div><div class="rivet-br"></div>
-      <canvas class="w-full h-full" height="600" id="gameCanvas" width="600"></canvas>
+    <!-- Arena -->
+    <div class="relative w-full iron-border bg-inverse-surface shadow-2xl rounded-sm overflow-hidden"
+         id="arena"
+         style="max-width:560px; aspect-ratio:20/22">
+      <div class="rivet rivet-tl"></div><div class="rivet rivet-tr"></div>
+      <div class="rivet rivet-bl"></div><div class="rivet rivet-br"></div>
+      <canvas id="gameCanvas" width="560" height="616" class="w-full h-full block"></canvas>
 
-      <!-- Start Overlay -->
-      <div class="absolute inset-0 z-20 flex flex-col items-center justify-center bg-inverse-surface/70 backdrop-blur-sm" id="startScreen">
-        <h1 class="font-headline-lg text-headline-lg text-inverse-on-surface mb-4">Serpent's Quest</h1>
-        <button class="wax-seal px-stack-lg py-stack-md rounded-full text-on-primary font-headline-md text-headline-md shadow-lg border-2 border-primary-container mb-4" onclick="startGame()">
+      <!-- Start / Game Over overlay -->
+      <div class="absolute inset-0 z-20 flex flex-col items-center justify-center bg-inverse-surface/75 backdrop-blur-sm" id="overlay">
+        <h2 class="font-headline-lg text-2xl text-inverse-on-surface mb-1 text-center px-4" id="overlayTitle"
+            style="font-family:'Libre Caslon Text',serif">Serpent's Quest</h2>
+        <p class="text-inverse-on-surface/70 mb-5 text-sm text-center px-4" id="overlayScore"></p>
+        <button class="wax-seal px-8 py-3 rounded-full text-on-primary font-bold text-lg shadow-lg border-2 border-primary-container"
+                id="startBtn" onclick="startGame()">
           Commencer la Quête
         </button>
-        <div class="text-center text-white/80 font-body-md text-sm space-y-1">
-          <p>Flèches du clavier pour diriger</p>
-          <p>🍎 Pomme +1 pt &nbsp;|&nbsp; ⭐ Bonus +3 pts</p>
-          <p>Évitez les murs et vous-même !</p>
-        </div>
+        <p class="mt-4 text-inverse-on-surface/60 text-sm text-center px-4 animate-pulse">
+          Flèches clavier · WASD · Swipe sur mobile
+        </p>
       </div>
 
-      <!-- Game Over Overlay -->
-      <div class="absolute inset-0 z-20 flex flex-col items-center justify-center bg-inverse-surface/70 backdrop-blur-sm hidden" id="gameOverScreen">
-        <h1 class="font-headline-lg text-headline-lg text-error mb-2">Quête Échouée</h1>
-        <p class="text-white font-body-md mb-1">Score : <span class="font-bold" id="finalScore">0</span> Deniers</p>
-        <p class="text-white/70 font-body-md text-sm mb-6">Légende : <span id="finalHigh">0</span> Deniers</p>
-        <button class="wax-seal px-stack-lg py-stack-md rounded-full text-on-primary font-headline-md text-headline-md shadow-lg border-2 border-primary-container" onclick="startGame()">
-          Réessayer
-        </button>
-      </div>
-
-      <!-- Pause Overlay -->
-      <div class="absolute inset-0 z-20 flex flex-col items-center justify-center bg-inverse-surface/60 backdrop-blur-sm hidden" id="pauseScreen">
-        <h1 class="font-headline-lg text-headline-lg text-inverse-on-surface mb-4">En Pause</h1>
-        <button class="wax-seal px-stack-lg py-stack-md rounded-full text-on-primary font-headline-md text-headline-md shadow-lg border-2 border-primary-container" onclick="togglePause()">
-          Reprendre
-        </button>
+      <!-- Pause overlay -->
+      <div class="absolute inset-0 z-20 hidden flex-col items-center justify-center bg-inverse-surface/60 backdrop-blur-sm" id="pauseOverlay">
+        <p class="text-inverse-on-surface text-3xl font-bold" style="font-family:'Libre Caslon Text',serif">⏸ En pause</p>
+        <p class="text-inverse-on-surface/60 mt-2 text-sm">Appuyez sur Espace pour continuer</p>
       </div>
     </div>
 
-    <!-- Mobile controls hint -->
-    <p class="text-white/60 text-xs font-body-md md:hidden">Utilisez les flèches du clavier</p>
+    <!-- Mobile D-pad -->
+    <div class="flex flex-col items-center gap-2 md:hidden mt-1">
+      <button class="wax-seal rounded-full w-14 h-14 text-on-primary flex items-center justify-center active:scale-95"
+              ontouchstart="e_setDir(0,-1,event)" onclick="setDir(0,-1)">
+        <span class="material-symbols-outlined text-3xl">keyboard_arrow_up</span>
+      </button>
+      <div class="flex gap-3">
+        <button class="wax-seal rounded-full w-14 h-14 text-on-primary flex items-center justify-center active:scale-95"
+                ontouchstart="e_setDir(-1,0,event)" onclick="setDir(-1,0)">
+          <span class="material-symbols-outlined text-3xl">keyboard_arrow_left</span>
+        </button>
+        <button class="wax-seal rounded-full w-14 h-14 text-on-primary flex items-center justify-center active:scale-95"
+                ontouchstart="e_setDir(0,1,event)" onclick="setDir(0,1)">
+          <span class="material-symbols-outlined text-3xl">keyboard_arrow_down</span>
+        </button>
+        <button class="wax-seal rounded-full w-14 h-14 text-on-primary flex items-center justify-center active:scale-95"
+                ontouchstart="e_setDir(1,0,event)" onclick="setDir(1,0)">
+          <span class="material-symbols-outlined text-3xl">keyboard_arrow_right</span>
+        </button>
+      </div>
+    </div>
   </div>
 
   <!-- Right Sidebar -->
-  <aside class="w-full md:w-64 flex flex-col gap-stack-lg">
+  <aside class="w-full md:w-60 flex flex-col gap-stack-lg shrink-0">
     <section class="bg-surface-container-low p-stack-md rounded-xl iron-border parchment-texture">
-      <div class="rivet-tl"></div><div class="rivet-tr"></div><div class="rivet-bl"></div><div class="rivet-br"></div>
-      <h2 class="font-headline-md text-headline-md text-primary mb-stack-md border-b border-outline-variant pb-1">Prochain Butin</h2>
-      <div class="space-y-stack-md">
-        <div class="flex items-center gap-3 p-2 bg-surface-container rounded-lg border border-outline-variant" id="nextFoodDisplay">
-          <div class="w-12 h-12 flex items-center justify-center text-secondary">
-            <span class="material-symbols-outlined text-4xl" style="font-variation-settings:'FILL' 1;">military_tech</span>
-          </div>
+      <div class="rivet rivet-tl"></div><div class="rivet rivet-tr"></div>
+      <div class="rivet rivet-bl"></div><div class="rivet rivet-br"></div>
+      <h2 class="font-headline-md text-headline-md text-primary mb-stack-md border-b border-outline-variant pb-1" style="font-family:'Libre Caslon Text',serif">Butin du Royaume</h2>
+      <div class="space-y-2">
+        <div class="flex items-center gap-3 p-2 bg-surface-container rounded-lg border border-outline-variant">
+          <span class="material-symbols-outlined text-4xl" style="font-variation-settings:'FILL' 1;color:#e9c349">military_tech</span>
           <div>
-            <p class="font-label-md font-bold">Couronne Royale</p>
-            <p class="text-[12px] text-on-surface-variant">+1 Denier, +1 segment</p>
+            <p class="font-label-md font-bold text-sm">Couronne Royale</p>
+            <p class="text-xs text-on-surface-variant">+1 Denier · +1 Bloc</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-3 p-2 bg-surface-container rounded-lg border border-outline-variant">
+          <span class="material-symbols-outlined text-4xl" style="font-variation-settings:'FILL' 1;color:#ffd700">star</span>
+          <div>
+            <p class="font-label-md font-bold text-sm">Étoile Dorée</p>
+            <p class="text-xs text-on-surface-variant">+3 Deniers · +2 Blocs</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-3 p-2 opacity-50">
+          <span class="material-symbols-outlined text-4xl" style="color:#8b0000">skull</span>
+          <div>
+            <p class="font-label-md font-bold text-sm">Mur de Pierre</p>
+            <p class="text-xs text-on-surface-variant">☠ Game Over</p>
           </div>
         </div>
       </div>
     </section>
-    <section class="mt-auto hidden md:block">
-      <div class="bg-surface-container-highest p-4 rounded-xl iron-border shadow-inner text-center">
-        <div class="rivet-tl"></div><div class="rivet-tr"></div><div class="rivet-bl"></div><div class="rivet-br"></div>
-        <p class="font-label-md italic">"Fortune sourit aux audacieux."</p>
+
+    <section class="hidden md:flex flex-col gap-2">
+      <div class="bg-surface-container p-3 rounded-xl iron-border parchment-texture">
+        <div class="rivet rivet-tl"></div><div class="rivet rivet-tr"></div>
+        <div class="rivet rivet-bl"></div><div class="rivet rivet-br"></div>
+        <p class="font-label-md text-xs text-on-surface-variant mb-1">Taille du Serpent</p>
+        <div class="flex items-center gap-2">
+          <div class="flex-1 progress-bar"><div class="progress-fill bg-tertiary-container" id="lengthBar" style="width:3%"></div></div>
+          <span class="text-xs font-bold w-6 text-right" id="lengthEl">1</span>
+        </div>
+        <p class="font-label-md text-xs text-on-surface-variant mb-1 mt-2">Lenteur</p>
+        <div class="flex items-center gap-2">
+          <div class="flex-1 progress-bar"><div class="progress-fill bg-primary" id="slowBar" style="width:0%"></div></div>
+          <span class="text-xs font-bold w-10 text-right" id="speedMsEl">150ms</span>
+        </div>
       </div>
-    </section>
-    <section class="bg-surface-container-low p-stack-md rounded-xl iron-border parchment-texture hidden md:block">
-      <div class="rivet-tl"></div><div class="rivet-tr"></div><div class="rivet-bl"></div><div class="rivet-br"></div>
-      <h2 class="font-headline-md text-headline-md text-primary mb-2 border-b border-outline-variant pb-1">Légende</h2>
-      <div class="space-y-1 text-sm font-body-md">
-        <div class="flex items-center gap-2"><span class="inline-block w-4 h-4 rounded" style="background:#003503"></span><span>Tête du serpent</span></div>
-        <div class="flex items-center gap-2"><span class="inline-block w-4 h-4 rounded" style="background:#4d7c0f"></span><span>Corps du serpent</span></div>
-        <div class="flex items-center gap-2"><span class="inline-block w-4 h-4 rounded" style="background:#383014"></span><span>Mur</span></div>
-        <div class="flex items-center gap-2"><span class="inline-block w-4 h-4 rounded" style="background:#e9c349"></span><span>Pomme 🍎 (+1 pt)</span></div>
-        <div class="flex items-center gap-2"><span class="inline-block w-4 h-4 rounded" style="background:#f97316"></span><span>Bonus ⭐ (+3 pts)</span></div>
+
+      <div class="bg-surface-container-high p-3 rounded-xl iron-border parchment-texture text-center">
+        <div class="rivet rivet-tl"></div><div class="rivet rivet-tr"></div>
+        <div class="rivet rivet-bl"></div><div class="rivet rivet-br"></div>
+        <p class="font-label-md font-bold text-primary text-xs mb-1">Conseil du Sage</p>
+        <p class="italic text-sm" id="wisdomEl">"Fortune sourit aux audacieux."</p>
       </div>
     </section>
   </aside>
 </main>
 
-<!-- Bottom Nav - Mobile -->
+<!-- Mobile Bottom Nav -->
 <nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-4 pt-2 bg-surface-container-low border-t-2 border-outline shadow-lg rounded-t-xl">
-  <a class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full p-2 w-12 h-12 shadow-inner" href="#">
-    <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1;">videogame_asset</span>
+  <a class="flex items-center justify-center bg-primary-container text-on-primary-container rounded-full p-2 w-12 h-12 shadow-inner" href="#">
+    <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1">videogame_asset</span>
   </a>
-  <a class="flex flex-col items-center justify-center text-on-surface-variant p-2 hover:text-primary transition-all" href="#">
+  <a class="flex items-center justify-center text-on-surface-variant p-2" href="#">
     <span class="material-symbols-outlined">military_tech</span>
   </a>
-  <a class="flex flex-col items-center justify-center text-on-surface-variant p-2 hover:text-primary transition-all" href="#">
+  <a class="flex items-center justify-center text-on-surface-variant p-2" href="#">
     <span class="material-symbols-outlined">auto_stories</span>
   </a>
-  <a class="flex flex-col items-center justify-center text-on-surface-variant p-2 hover:text-primary transition-all" href="#">
+  <a class="flex items-center justify-center text-on-surface-variant p-2" href="#">
     <span class="material-symbols-outlined">history_edu</span>
   </a>
 </nav>
 
 <script>
-// ─── Map (extrait du fichier snake_map_vibe_coding.xlsx) ───
-// 0=vide  1=mur  2=pomme  3=bonus
+// MAP: 22 rows x 20 cols — 0=empty 1=wall 2=food-spawn 3=bonus-spawn
+const COLS = 20, ROWS = 22;
 const MAP = [
   [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
   [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
@@ -311,358 +326,420 @@ const MAP = [
   [1,0,1,0,0,0,0,2,0,0,0,0,2,0,0,0,0,1,0,1],
   [1,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,1],
   [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+  [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+  [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
   [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
 ];
 
-// ─── Constants ───
-const GRID = 20;
-const TILE = 30; // px per cell
-const SPEED = 150; // ms per tick
+const FOOD_SPAWNS  = [];
+const BONUS_SPAWNS = [];
+for (let r = 0; r < ROWS; r++)
+  for (let c = 0; c < COLS; c++) {
+    if (MAP[r][c] === 2) FOOD_SPAWNS.push({r,c});
+    if (MAP[r][c] === 3) BONUS_SPAWNS.push({r,c});
+  }
 
-// ─── DOM refs ───
 const canvas = document.getElementById('gameCanvas');
-const ctx = canvas.getContext('2d');
-const scoreEl = document.getElementById('score');
-const highScoreEl = document.getElementById('highScore');
-const lengthEl = document.getElementById('length');
-const startScreen = document.getElementById('startScreen');
-const gameOverScreen = document.getElementById('gameOverScreen');
-const pauseScreen = document.getElementById('pauseScreen');
-const finalScoreEl = document.getElementById('finalScore');
-const finalHighEl = document.getElementById('finalHigh');
-const scoreHistoryEl = document.getElementById('scoreHistory');
-const nextFoodDisplay = document.getElementById('nextFoodDisplay');
-const pauseIcon = document.getElementById('pauseIcon');
+const ctx    = canvas.getContext('2d');
+const CW = canvas.width;   // 560
+const CH = canvas.height;  // 616
+const CellW = CW / COLS;   // 28
+const CellH = CH / ROWS;   // 28
 
-// ─── Game state ───
-let snake, dx, dy, food, bonus, score, gameActive, paused, loopId;
-let highScore = parseInt(localStorage.getItem('snakeHigh') || '0');
-let scoreHistory = JSON.parse(localStorage.getItem('snakeHistory') || '[]');
+// Pre-render background + walls
+const bgCanvas = document.createElement('canvas');
+bgCanvas.width = CW; bgCanvas.height = CH;
+const bgCtx = bgCanvas.getContext('2d');
 
-highScoreEl.textContent = highScore;
-renderHistory();
+(function buildBackground() {
+  bgCtx.fillStyle = '#1c1508';
+  bgCtx.fillRect(0, 0, CW, CH);
 
-// ─── Collect free cells from map ───
-function freeCells() {
-  const cells = [];
-  for (let r = 0; r < GRID; r++)
-    for (let c = 0; c < GRID; c++)
-      if (MAP[r][c] === 0) cells.push({x: c, y: r});
-  return cells;
-}
+  bgCtx.strokeStyle = 'rgba(255,240,180,0.04)';
+  bgCtx.lineWidth = 0.5;
+  for (let c = 0; c <= COLS; c++) {
+    bgCtx.beginPath(); bgCtx.moveTo(c*CellW, 0); bgCtx.lineTo(c*CellW, CH); bgCtx.stroke();
+  }
+  for (let r = 0; r <= ROWS; r++) {
+    bgCtx.beginPath(); bgCtx.moveTo(0, r*CellH); bgCtx.lineTo(CW, r*CellH); bgCtx.stroke();
+  }
 
-function randomFreeCell(excludes) {
-  const free = freeCells().filter(cell =>
-    !excludes.some(e => e.x === cell.x && e.y === cell.y)
-  );
-  return free[Math.floor(Math.random() * free.length)];
-}
-
-// ─── Spawn food / bonus on a free cell ───
-function spawnFood() {
-  food = randomFreeCell([...snake, ...(bonus ? [bonus] : [])]);
-}
-function spawnBonus() {
-  bonus = randomFreeCell([...snake, food]);
-}
-
-// ─── Drawing ───
-function drawBackground() {
-  ctx.fillStyle = '#f4e4bc';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-}
-
-function drawMap() {
-  for (let r = 0; r < GRID; r++) {
-    for (let c = 0; c < GRID; c++) {
-      if (MAP[r][c] === 1) {
-        const x = c * TILE, y = r * TILE;
-        // Wall base
-        ctx.fillStyle = '#2a2008';
-        ctx.fillRect(x, y, TILE, TILE);
-        // Highlight edge (bevel)
-        ctx.fillStyle = '#4a3820';
-        ctx.fillRect(x + 1, y + 1, TILE - 2, TILE - 2);
-        // Inner shadow
-        ctx.fillStyle = '#1a1205';
-        ctx.fillRect(x + 2, y + 2, TILE - 4, TILE - 4);
-        // Stone pattern dots
-        ctx.fillStyle = 'rgba(255,255,255,0.06)';
-        ctx.fillRect(x + 4, y + 4, 4, 4);
-        ctx.fillRect(x + 14, y + 14, 4, 4);
-      }
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      if (MAP[r][c] !== 1) continue;
+      const x = c*CellW, y = r*CellH, w = CellW, h = CellH;
+      bgCtx.fillStyle = '#3d3420';
+      bgCtx.fillRect(x, y, w, h);
+      bgCtx.fillStyle = '#4a3f28';
+      bgCtx.fillRect(x+1, y+1, w-2, h-2);
+      bgCtx.fillStyle = 'rgba(255,240,180,0.18)';
+      bgCtx.fillRect(x+1, y+1, w-2, 2);
+      bgCtx.fillRect(x+1, y+1, 2, h-2);
+      bgCtx.fillStyle = 'rgba(0,0,0,0.45)';
+      bgCtx.fillRect(x+1, y+h-3, w-2, 2);
+      bgCtx.fillRect(x+w-3, y+1, 2, h-2);
+      bgCtx.strokeStyle = 'rgba(0,0,0,0.22)';
+      bgCtx.lineWidth = 0.5;
+      bgCtx.beginPath();
+      bgCtx.moveTo(x+w*0.25, y+h*0.35);
+      bgCtx.lineTo(x+w*0.55, y+h*0.65);
+      bgCtx.stroke();
     }
   }
+})();
+
+let snake, dx, dy, pendingDx, pendingDy;
+let food, bonus;
+let score;
+let gameActive, paused;
+let bonusTimeoutId;
+let rafId, lastTs, tickAccum;
+let bonusGlow = 0, bonusGlowDir = 1;
+
+const WISDOMS = [
+  '"Fortune sourit aux audacieux."',
+  '"La vitesse est l\'ennemi de la sagesse."',
+  '"Un serpent patient mange toujours."',
+  '"Les murs ne mentent jamais."',
+  '"La couronne ne court pas — c\'est toi qui cours."',
+  '"Plus on grandit, plus on doit réfléchir."',
+  '"Le sage avance lentement, mais sûrement."',
+];
+
+const LS_HS = 'sq_hs', LS_HIST = 'sq_hist';
+const getHS   = () => parseInt(localStorage.getItem(LS_HS) || '0');
+const saveHS  = s => { if (s > getHS()) localStorage.setItem(LS_HS, s); };
+const getHist = () => JSON.parse(localStorage.getItem(LS_HIST) || '[]');
+const saveHist = s => {
+  const h = getHist();
+  const d = new Date();
+  h.unshift({ label: d.toLocaleDateString('fr-FR',{day:'numeric',month:'short'}), score: s });
+  localStorage.setItem(LS_HIST, JSON.stringify(h.slice(0,5)));
+};
+
+const getSpeed = () => Math.min(450, 150 + score * 5);
+
+function updateHUD() {
+  document.getElementById('scoreEl').textContent = score;
+  document.getElementById('highScoreEl').textContent = getHS();
+  const sp = getSpeed();
+  document.getElementById('speedMsEl').textContent = sp + 'ms';
+  document.getElementById('slowBar').style.width = Math.round(((sp-150)/300)*100) + '%';
+  let label = '⚡ Vif';
+  if (sp >= 400) label = '🐢 Serein';
+  else if (sp >= 300) label = '🐍 Posé';
+  else if (sp >= 200) label = '🦎 Calme';
+  document.getElementById('speedEl').textContent = label;
+  const len = snake.length;
+  document.getElementById('lengthEl').textContent = len;
+  document.getElementById('lengthBar').style.width = Math.min(100, Math.round(len/30*100)) + '%';
 }
 
-function drawFood() {
-  if (!food) return;
-  const x = food.x * TILE + 2;
-  const y = food.y * TILE + 2;
-  const s = TILE - 4;
-
-  ctx.fillStyle = '#e9c349';
-  ctx.shadowColor = '#735c00';
-  ctx.shadowBlur = 8;
-
-  // Crown shape
-  ctx.beginPath();
-  ctx.moveTo(x, y + s);
-  ctx.lineTo(x + s, y + s);
-  ctx.lineTo(x + s, y + s * 0.5);
-  ctx.lineTo(x + s * 0.8, y + s * 0.25);
-  ctx.lineTo(x + s * 0.6, y + s * 0.5);
-  ctx.lineTo(x + s * 0.5, y + s * 0.1);
-  ctx.lineTo(x + s * 0.4, y + s * 0.5);
-  ctx.lineTo(x + s * 0.2, y + s * 0.25);
-  ctx.lineTo(x, y + s * 0.5);
-  ctx.closePath();
-  ctx.fill();
-  ctx.shadowBlur = 0;
+function updateSidebar() {
+  document.getElementById('highScoreEl').textContent = getHS();
+  const hist = getHist();
+  const ul = document.getElementById('lastQuests');
+  ul.innerHTML = hist.length === 0
+    ? '<li class="py-1"><span class="font-label-md text-on-surface-variant italic text-sm">Aucune quête</span></li>'
+    : hist.map((h,i) => `
+        <li class="flex justify-between items-center border-b border-dotted border-outline py-1 ${i?'opacity-60':''}">
+          <span class="font-label-md text-sm">${h.label}</span>
+          <span class="font-bold text-sm ${i?'':'text-primary'}">${h.score} ₯</span>
+        </li>`).join('');
+  document.getElementById('wisdomEl').textContent = WISDOMS[Math.floor(Math.random()*WISDOMS.length)];
 }
 
-function drawBonus() {
-  if (!bonus) return;
-  const cx = bonus.x * TILE + TILE / 2;
-  const cy = bonus.y * TILE + TILE / 2;
-  const r = TILE / 2 - 3;
-  const spikes = 5;
+function occupied() {
+  const s = new Set(snake.map(p => `${p.c},${p.r}`));
+  if (food)  s.add(`${food.c},${food.r}`);
+  if (bonus) s.add(`${bonus.c},${bonus.r}`);
+  return s;
+}
 
-  ctx.fillStyle = '#f97316';
-  ctx.shadowColor = '#ea580c';
-  ctx.shadowBlur = 10;
+function spawnFood() {
+  const occ = occupied();
+  const pool = FOOD_SPAWNS.filter(p => !occ.has(`${p.c},${p.r}`));
+  const src = pool.length > 0 ? pool : (() => {
+    const all = [];
+    for (let r=0;r<ROWS;r++) for (let c=0;c<COLS;c++)
+      if (MAP[r][c] !== 1 && !occ.has(`${c},${r}`)) all.push({r,c});
+    return all;
+  })();
+  food = src.length ? { ...src[Math.floor(Math.random()*src.length)] } : null;
+}
 
-  ctx.beginPath();
-  for (let i = 0; i < spikes * 2; i++) {
-    const angle = (i * Math.PI) / spikes - Math.PI / 2;
-    const dist = i % 2 === 0 ? r : r * 0.45;
-    const px = cx + Math.cos(angle) * dist;
-    const py = cy + Math.sin(angle) * dist;
-    i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
-  }
-  ctx.closePath();
-  ctx.fill();
-  ctx.shadowBlur = 0;
+function spawnBonus() {
+  if (bonus) return;
+  const occ = occupied();
+  const pool = BONUS_SPAWNS.filter(p => !occ.has(`${p.c},${p.r}`));
+  const src = pool.length > 0 ? pool : (() => {
+    const all = [];
+    for (let r=0;r<ROWS;r++) for (let c=0;c<COLS;c++)
+      if (MAP[r][c] !== 1 && !occ.has(`${c},${r}`)) all.push({r,c});
+    return all;
+  })();
+  if (!src.length) return;
+  bonus = { ...src[Math.floor(Math.random()*src.length)] };
+  bonusTimeoutId = setTimeout(removeBonus, 8000);
+}
+
+function removeBonus() {
+  bonus = null;
+  clearTimeout(bonusTimeoutId);
 }
 
 function drawSnake() {
-  snake.forEach((part, idx) => {
-    const isHead = idx === 0;
-    const x = part.x * TILE + TILE / 2;
-    const y = part.y * TILE + TILE / 2;
-
+  const S = Math.min(CellW, CellH);
+  snake.forEach((seg, i) => {
+    const isHead = i === 0;
+    const pad = isHead ? 1 : 2;
+    const x = seg.c*CellW + CellW/2;
+    const y = seg.r*CellH + CellH/2;
     ctx.save();
     ctx.translate(x, y);
-    ctx.rotate(Math.PI / 4);
-
-    // Shadow
-    ctx.fillStyle = 'rgba(0,0,0,0.25)';
-    ctx.fillRect(-TILE / 2 + 3, -TILE / 2 + 3, TILE - 4, TILE - 4);
-
-    // Body
-    ctx.fillStyle = isHead ? '#003503' : '#4d7c0f';
-    ctx.fillRect(-TILE / 2 + 2, -TILE / 2 + 2, TILE - 4, TILE - 4);
-
+    ctx.rotate(Math.PI/4);
+    ctx.fillStyle = 'rgba(0,0,0,0.35)';
+    ctx.fillRect(-S/2+pad+1, -S/2+pad+1, S-pad*2, S-pad*2);
     if (isHead) {
-      // Gold border
-      ctx.strokeStyle = '#e9c349';
-      ctx.lineWidth = 2;
-      ctx.strokeRect(-TILE / 2 + 2, -TILE / 2 + 2, TILE - 4, TILE - 4);
-      // Eyes
+      ctx.fillStyle = '#003503';
+      ctx.fillRect(-S/2+pad, -S/2+pad, S-pad*2, S-pad*2);
+      ctx.strokeStyle = '#e9c349'; ctx.lineWidth = 1.5;
+      ctx.strokeRect(-S/2+pad, -S/2+pad, S-pad*2, S-pad*2);
+      ctx.rotate(-Math.PI/4);
       ctx.fillStyle = '#ff907f';
-      ctx.beginPath();
-      ctx.arc(-3, -3, 2.5, 0, Math.PI * 2);
-      ctx.arc(3, -3, 2.5, 0, Math.PI * 2);
-      ctx.fill();
+      ctx.shadowColor = '#ff4400'; ctx.shadowBlur = 5;
+      ctx.beginPath(); ctx.arc(-S*0.15, -S*0.08, S*0.09, 0, Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc( S*0.15, -S*0.08, S*0.09, 0, Math.PI*2); ctx.fill();
+      ctx.shadowBlur = 0;
     } else {
-      // Scale highlight
-      ctx.fillStyle = 'rgba(255,255,255,0.12)';
-      ctx.fillRect(-TILE / 2 + 4, -TILE / 2 + 4, TILE / 2 - 4, 2);
+      const ratio = i/snake.length;
+      const gr = Math.round(77*(1-ratio));
+      const gg = Math.round(124*(1-ratio)+53*ratio);
+      const gb = Math.round(45*(1-ratio)+3*ratio);
+      ctx.fillStyle = `rgb(${gr},${gg},${gb})`;
+      ctx.fillRect(-S/2+pad, -S/2+pad, S-pad*2, S-pad*2);
+      if (i%2===0) {
+        ctx.fillStyle = 'rgba(233,195,73,0.18)';
+        ctx.fillRect(-S/2+pad+2, -S/2+pad+2, S-pad*2-4, S-pad*2-4);
+      }
     }
-
     ctx.restore();
   });
 }
 
+function drawFood() {
+  if (!food) return;
+  const x = food.c*CellW+2, y = food.r*CellH+2, sz = CellW-4;
+  ctx.save();
+  ctx.shadowColor = '#e9c349'; ctx.shadowBlur = 10;
+  ctx.fillStyle = '#e9c349';
+  ctx.beginPath();
+  ctx.moveTo(x,         y+sz);
+  ctx.lineTo(x+sz,      y+sz);
+  ctx.lineTo(x+sz,      y+sz*0.5);
+  ctx.lineTo(x+sz*0.82, y+sz*0.22);
+  ctx.lineTo(x+sz*0.62, y+sz*0.5);
+  ctx.lineTo(x+sz*0.5,  y+sz*0.06);
+  ctx.lineTo(x+sz*0.38, y+sz*0.5);
+  ctx.lineTo(x+sz*0.18, y+sz*0.22);
+  ctx.lineTo(x,         y+sz*0.5);
+  ctx.closePath();
+  ctx.fill();
+  ctx.shadowBlur = 4; ctx.shadowColor = '#8b0000';
+  ctx.fillStyle = '#8b0000';
+  ctx.beginPath(); ctx.arc(x+sz/2, y+sz*0.72, sz*0.1, 0, Math.PI*2); ctx.fill();
+  ctx.shadowBlur = 0; ctx.restore();
+}
+
+function drawBonus() {
+  if (!bonus) return;
+  bonusGlow += bonusGlowDir*0.4;
+  if (bonusGlow > 12) bonusGlowDir = -1;
+  if (bonusGlow < 3)  bonusGlowDir =  1;
+  const cx = bonus.c*CellW+CellW/2, cy = bonus.r*CellH+CellH/2;
+  const R = CellW*0.4, r = R*0.4, pts = 5;
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.shadowColor = '#ffd700'; ctx.shadowBlur = bonusGlow;
+  ctx.fillStyle = '#ffd700';
+  ctx.beginPath();
+  for (let i = 0; i < pts*2; i++) {
+    const angle = (i*Math.PI/pts) - Math.PI/2;
+    const radius = i%2===0 ? R : r;
+    const px = Math.cos(angle)*radius, py = Math.sin(angle)*radius;
+    i===0 ? ctx.moveTo(px,py) : ctx.lineTo(px,py);
+  }
+  ctx.closePath(); ctx.fill();
+  ctx.shadowBlur = 0; ctx.restore();
+}
+
 function render() {
-  drawBackground();
-  drawMap();
+  ctx.clearRect(0, 0, CW, CH);
+  ctx.drawImage(bgCanvas, 0, 0);
   drawFood();
   drawBonus();
   drawSnake();
 }
 
-// ─── Game logic ───
-function advance() {
-  const head = {x: snake[0].x + dx, y: snake[0].y + dy};
-
-  // Wall collision
-  if (
-    head.x < 0 || head.x >= GRID ||
-    head.y < 0 || head.y >= GRID ||
-    MAP[head.y][head.x] === 1
-  ) { endGame(); return; }
-
-  // Self collision
-  if (snake.some(p => p.x === head.x && p.y === head.y)) { endGame(); return; }
-
-  snake.unshift(head);
-
-  // Food check
-  if (food && head.x === food.x && head.y === food.y) {
-    score += 1;
-    spawnFood();
-    // Keep tail (gained 1 segment naturally)
-  } else if (bonus && head.x === bonus.x && head.y === bonus.y) {
-    score += 3;
-    // Add 2 extra segments by not popping twice
-    snake.push({...snake[snake.length - 1]});
-    snake.push({...snake[snake.length - 1]});
-    spawnBonus();
-  } else {
-    snake.pop();
+function gameLoop(ts) {
+  if (!gameActive || paused) return;
+  if (!lastTs) lastTs = ts;
+  const dt = ts - lastTs; lastTs = ts;
+  tickAccum += dt;
+  const interval = getSpeed();
+  while (tickAccum >= interval && gameActive) {
+    tickAccum -= interval;
+    tick();
   }
-
-  scoreEl.textContent = score;
-  lengthEl.textContent = snake.length;
-  updateNextFoodUI();
+  render();
+  if (gameActive) rafId = requestAnimationFrame(gameLoop);
 }
 
-function gameLoop() {
-  if (!gameActive || paused) return;
-  advance();
-  if (gameActive) loopId = setTimeout(gameLoop, SPEED);
+function tick() {
+  dx = pendingDx; dy = pendingDy;
+  const head = { c: snake[0].c+dx, r: snake[0].r+dy };
+  if (head.r<0||head.r>=ROWS||head.c<0||head.c>=COLS||MAP[head.r][head.c]===1) { endGame(); return; }
+  if (snake.some(s => s.c===head.c && s.r===head.r)) { endGame(); return; }
+  let grow = 0;
+  if (food && head.c===food.c && head.r===food.r) {
+    score += 1; grow = 1; spawnFood();
+    canvas.style.transform = 'translateY(2px)';
+    setTimeout(() => { canvas.style.transform = ''; }, 80);
+  }
+  if (bonus && head.c===bonus.c && head.r===bonus.r) {
+    score += 3; grow = 2; removeBonus();
+    canvas.style.transform = 'translateY(4px)';
+    setTimeout(() => { canvas.style.transform = ''; }, 150);
+    setTimeout(() => { if (gameActive) spawnBonus(); }, 6000+Math.random()*4000);
+  }
+  snake.unshift(head);
+  if (grow===0) { snake.pop(); }
+  else { for (let i=1;i<grow;i++) snake.push({...snake[snake.length-1]}); }
+  updateHUD();
+  if (!bonus && score>0 && Math.random()<0.015) spawnBonus();
 }
 
 function startGame() {
   score = 0;
-  dx = 1; dy = 0;
-  snake = [{x: 10, y: 10}];
-  gameActive = true;
-  paused = false;
-
+  snake = [{c:10,r:10}];
+  dx=1; dy=0; pendingDx=1; pendingDy=0;
+  food=null; bonus=null;
+  bonusGlow=0; bonusGlowDir=1;
+  gameActive=true; paused=false;
+  lastTs=null; tickAccum=0;
+  clearTimeout(bonusTimeoutId);
   spawnFood();
-  spawnBonus();
-
-  scoreEl.textContent = '0';
-  lengthEl.textContent = '1';
-  pauseIcon.textContent = 'pause';
-
-  startScreen.classList.add('hidden');
-  gameOverScreen.classList.add('hidden');
-  pauseScreen.classList.add('hidden');
-
-  clearTimeout(loopId);
-  render();
-  loopId = setTimeout(gameLoop, SPEED);
+  document.getElementById('overlay').classList.add('hidden');
+  document.getElementById('pauseOverlay').classList.add('hidden');
+  document.getElementById('pauseOverlay').style.display='';
+  document.getElementById('pauseIcon').textContent='pause';
+  updateHUD(); updateSidebar();
+  cancelAnimationFrame(rafId);
+  rafId = requestAnimationFrame(gameLoop);
 }
 
 function endGame() {
   gameActive = false;
-  clearTimeout(loopId);
-
-  if (score > highScore) {
-    highScore = score;
-    localStorage.setItem('snakeHigh', highScore);
-    highScoreEl.textContent = highScore;
-  }
-
-  // Save history (max 5)
-  const now = new Date();
-  const label = now.toLocaleDateString('fr-FR', {day:'numeric', month:'short'});
-  scoreHistory.unshift({label, score});
-  if (scoreHistory.length > 5) scoreHistory.pop();
-  localStorage.setItem('snakeHistory', JSON.stringify(scoreHistory));
-  renderHistory();
-
-  finalScoreEl.textContent = score;
-  finalHighEl.textContent = highScore;
-  gameOverScreen.classList.remove('hidden');
-
-  render();
+  cancelAnimationFrame(rafId);
+  clearTimeout(bonusTimeoutId);
+  saveHist(score); saveHS(score);
+  updateSidebar(); render();
+  document.getElementById('overlayTitle').textContent = '☠ Quête Échouée';
+  document.getElementById('overlayScore').textContent = `Score : ${score} ₯  ·  Record : ${getHS()} ₯`;
+  document.getElementById('startBtn').textContent = 'Réessayer';
+  document.getElementById('overlay').classList.remove('hidden');
 }
 
-function restartGame() {
-  if (!gameActive) { startGame(); return; }
-  endGame();
-  setTimeout(startGame, 100);
+function resetGame() {
+  if (gameActive) { gameActive=false; cancelAnimationFrame(rafId); clearTimeout(bonusTimeoutId); }
+  document.getElementById('overlayTitle').textContent = "Serpent's Quest";
+  document.getElementById('overlayScore').textContent = '';
+  document.getElementById('startBtn').textContent = 'Commencer la Quête';
+  document.getElementById('overlay').classList.remove('hidden');
+  document.getElementById('pauseOverlay').classList.add('hidden');
+  ctx.clearRect(0,0,CW,CH); ctx.drawImage(bgCanvas,0,0);
 }
 
 function togglePause() {
   if (!gameActive) return;
   paused = !paused;
-  pauseIcon.textContent = paused ? 'play_arrow' : 'pause';
+  document.getElementById('pauseIcon').textContent = paused ? 'play_arrow' : 'pause';
   if (paused) {
-    clearTimeout(loopId);
-    pauseScreen.classList.remove('hidden');
+    document.getElementById('pauseOverlay').classList.remove('hidden');
+    document.getElementById('pauseOverlay').style.display = 'flex';
   } else {
-    pauseScreen.classList.add('hidden');
-    loopId = setTimeout(gameLoop, SPEED);
+    document.getElementById('pauseOverlay').classList.add('hidden');
+    lastTs = null;
+    rafId = requestAnimationFrame(gameLoop);
   }
 }
 
-// ─── UI helpers ───
-function renderHistory() {
-  if (scoreHistory.length === 0) {
-    scoreHistoryEl.innerHTML = '<li class="text-on-surface-variant text-sm italic text-center py-2">Aucune quête accomplie…</li>';
-    return;
-  }
-  scoreHistoryEl.innerHTML = scoreHistory.map((s, i) => `
-    <li class="flex justify-between items-center border-b border-dotted border-outline p-1 ${i > 0 ? 'opacity-70' : ''}">
-      <span class="font-label-md">${s.label}</span>
-      <span class="font-bold ${i === 0 ? 'text-primary' : ''}">${s.score} ₯</span>
-    </li>`).join('');
-}
-
-function updateNextFoodUI() {
-  if (!bonus) return;
-  // Show info about the bonus being active
-  nextFoodDisplay.innerHTML = `
-    <div class="w-12 h-12 flex items-center justify-center" style="color:#f97316">
-      <span class="material-symbols-outlined text-4xl" style="font-variation-settings:'FILL' 1;">star</span>
-    </div>
-    <div>
-      <p class="font-label-md font-bold">Étoile Bonus</p>
-      <p class="text-[12px] text-on-surface-variant">+3 Deniers, +2 segments</p>
-    </div>`;
-}
-
-// ─── Keyboard controls ───
-window.addEventListener('keydown', e => {
-  if (e.key === 'Enter') {
-    if (!gameActive) { startGame(); return; }
-  }
-  if (e.key === ' ') { e.preventDefault(); togglePause(); return; }
+function setDir(ndx, ndy) {
   if (!gameActive || paused) return;
+  if (ndx!==0 && ndx===-dx) return;
+  if (ndy!==0 && ndy===-dy) return;
+  pendingDx=ndx; pendingDy=ndy;
+}
+function e_setDir(ndx, ndy, e) { e.preventDefault(); setDir(ndx, ndy); }
 
-  const goingLeft = dx === -1, goingRight = dx === 1;
-  const goingUp = dy === -1, goingDown = dy === 1;
-
-  if ((e.key === 'ArrowLeft'  || e.key === 'a') && !goingRight) { dx = -1; dy = 0; }
-  if ((e.key === 'ArrowRight' || e.key === 'd') && !goingLeft)  { dx = 1;  dy = 0; }
-  if ((e.key === 'ArrowUp'    || e.key === 'w') && !goingDown)  { dx = 0;  dy = -1; }
-  if ((e.key === 'ArrowDown'  || e.key === 's') && !goingUp)    { dx = 0;  dy = 1; }
+window.addEventListener('keydown', e => {
+  const KM = {
+    ArrowLeft:[-1,0], ArrowRight:[1,0], ArrowUp:[0,-1], ArrowDown:[0,1],
+    a:[-1,0], A:[-1,0], d:[1,0], D:[1,0], w:[0,-1], W:[0,-1], s:[0,1], S:[0,1],
+  };
+  const dir = KM[e.key];
+  if (dir) {
+    e.preventDefault();
+    if (!gameActive) { startGame(); return; }
+    setDir(dir[0], dir[1]);
+  }
+  if (e.key===' ' || e.key==='Escape') { e.preventDefault(); togglePause(); }
 });
 
-// ─── Initial render ───
-(function init() {
-  // Draw the map without a snake so the player sees the arena before starting
-  ctx.fillStyle = '#f4e4bc';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-  for (let r = 0; r < GRID; r++) {
-    for (let c = 0; c < GRID; c++) {
-      if (MAP[r][c] === 1) {
-        const x = c * TILE, y = r * TILE;
-        ctx.fillStyle = '#2a2008';
-        ctx.fillRect(x, y, TILE, TILE);
-        ctx.fillStyle = '#4a3820';
-        ctx.fillRect(x + 1, y + 1, TILE - 2, TILE - 2);
-        ctx.fillStyle = '#1a1205';
-        ctx.fillRect(x + 2, y + 2, TILE - 4, TILE - 4);
-      }
+let touchX, touchY;
+canvas.addEventListener('touchstart', e => { touchX=e.touches[0].clientX; touchY=e.touches[0].clientY; e.preventDefault(); }, {passive:false});
+canvas.addEventListener('touchend',   e => {
+  const dx2 = e.changedTouches[0].clientX-touchX;
+  const dy2 = e.changedTouches[0].clientY-touchY;
+  if (Math.abs(dx2)>Math.abs(dy2)) setDir(dx2>0?1:-1, 0);
+  else                              setDir(0, dy2>0?1:-1);
+  e.preventDefault();
+}, {passive:false});
+
+// Snake preview in Bestiaire
+(function drawPreview() {
+  const pc = document.getElementById('snakePreview');
+  const pctx = pc.getContext('2d');
+  const PW = pc.width, PH = pc.height, cs = 14;
+  pctx.fillStyle = '#003503';
+  pctx.fillRect(0,0,PW,PH);
+  const segs = [
+    {c:1,r:2},{c:2,r:2},{c:3,r:2},{c:4,r:2},{c:5,r:2},{c:6,r:2},
+    {c:6,r:3},{c:6,r:4},{c:5,r:4},{c:4,r:4},{c:3,r:4},{c:2,r:4},{c:2,r:3},
+  ];
+  segs.forEach((seg, i) => {
+    const px = seg.c*cs+cs/2+(PW-8*cs)/2;
+    const py = seg.r*cs+cs/2+(PH-6*cs)/2;
+    const pad = i===0?1:2;
+    pctx.save(); pctx.translate(px,py); pctx.rotate(Math.PI/4);
+    pctx.fillStyle='rgba(0,0,0,0.3)';
+    pctx.fillRect(-cs/2+pad+1,-cs/2+pad+1,cs-pad*2,cs-pad*2);
+    if (i===0) {
+      pctx.fillStyle='#003503'; pctx.fillRect(-cs/2+pad,-cs/2+pad,cs-pad*2,cs-pad*2);
+      pctx.strokeStyle='#e9c349'; pctx.lineWidth=1;
+      pctx.strokeRect(-cs/2+pad,-cs/2+pad,cs-pad*2,cs-pad*2);
+    } else {
+      const t=i/segs.length;
+      pctx.fillStyle=`rgb(${Math.round(77*(1-t))},${Math.round(124*(1-t)+53*t)},${Math.round(45*(1-t)+3*t)})`;
+      pctx.fillRect(-cs/2+pad,-cs/2+pad,cs-pad*2,cs-pad*2);
+      if (i%2===0) { pctx.fillStyle='rgba(233,195,73,0.22)'; pctx.fillRect(-cs/2+pad+2,-cs/2+pad+2,cs-pad*2-4,cs-pad*2-4); }
     }
-  }
+    pctx.restore();
+  });
 })();
+
+updateSidebar();
+ctx.drawImage(bgCanvas, 0, 0);
 </script>
 </body>
 </html>
